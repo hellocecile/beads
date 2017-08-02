@@ -14,12 +14,12 @@ body {
 }
 
 .box {
-  background-color: #2D2D2D;
+  border: 1px solid #CCC;
   height: 2vw;
   width: 2.4vw;
   display: inline-block;
   border-radius: 0.2vw;
-  margin: 0 0.1vw;
+  margin: -0.25vw 0vw;
 }
 
 .color-picker {
