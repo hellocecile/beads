@@ -2,29 +2,29 @@
 
 $(document).ready(function(){
 
-    var colorClass = '';
+    var color = '';
 
 	$('.select-color').click(function() {
 		var selectedColor = $(this).attr('class');
 
 		switch (selectedColor) {
 			case "select-color cyan not-selected":
-				colorClass = 'cyan';
+				color = 'cyan';
 				break;
 			case "select-color yellow not-selected":
-				colorClass = 'yellow';
+				color = 'yellow';
 				break;
 			case "select-color magenta not-selected":
-				colorClass = 'magenta';
+				color = 'magenta';
 				break;
 			case "select-color purple not-selected":
-				colorClass = 'purple';
+				color = 'purple';
 				break;
 			case "select-color pink not-selected":
-				colorClass = 'pink';
+				color = 'pink';
 				break;
 			case "select-color green not-selected":
-				colorClass = 'green';
+				color = 'green';
 				break;
 		}
 
@@ -44,7 +44,7 @@ $(document).ready(function(){
     }
 
     $(".box").on("click", function() {
-        $(this).toggleClass(colorClass);
+        $(this).css("background-color", color);
     });
 
 });
