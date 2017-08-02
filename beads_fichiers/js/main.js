@@ -30,10 +30,10 @@ $(document).ready(function() {
 		$(this).siblings().addClass('not-selected');
 	});
 
-// au clique sur une div
-$('.box').on("click", function() {
-	$(this).toggleClass(colorClass);
-});
+	// au clique sur une div
+	$('.box').on("click", function() {
+		$(this).toggleClass(colorClass);
+	});
 
 
 });

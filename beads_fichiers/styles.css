@@ -24,7 +24,6 @@ body {
 
 .color-picker {
   display: block;
-  width: 100%;
   height: 15vw;
   text-align: center;
   display: flex;
@@ -67,7 +66,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: black;
+  /*background-color: black;*/
   height: 6vw;
   width: 17vw;
   font-size: 1.50vw;
