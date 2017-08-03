@@ -2,46 +2,45 @@ body {
   text-align: center;
   transition: 0.1s;
   font-family: Helvetica, sans-serif;
-  margin: 3vw auto;
-  width: 95vw;
-  min-width: 400px;
+  box-sizing: border-box;
+}
+
+
+/*****JQUERY OVERRIDE*****/
+
+.ui-panel {
+    width: initial;
+}
+
+/*************************/
+
+.row{
+    height: 15px;
 }
 
 .row:nth-child(2n) {
-    left: 1.2vw;
+    left: 7px;
     position: relative;
 }
 
 .box {
   border: 1px solid #CCC;
-  height: 2vw;
-  width: 2.4vw;
+  height: 14px;
+  width: 16px;
   display: inline-block;
-  border-radius: 0.2vw;
-  margin: -0.25vw 0vw;
+  margin: 0;
+  border-radius: 2px;
 }
 
 .pick {
     display: block;
-    width: 1vw;
-    height: 1vw;
-    border-radius: 1vw;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
     margin: 0.50vw;
+    border: 1px solid #DDD;
 }
 
-.select-color {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /*background-color: black;*/
-  height: 6vw;
-  width: 17vw;
-  font-size: 1.50vw;
-  font-weight: bold;
-  letter-spacing: 0.2em;
-}
-
-.not-selected{
-  color: #2D2D2D;
-  /*border-bottom: 1vw solid #2D2D2D !important;*/
+.selected {
+    border: 1px solid #333;
 }

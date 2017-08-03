@@ -12,6 +12,8 @@ $(document).ready(function(){
         "magenta",
         "pink",
         "green",
+        "white",
+        "black",
     ];
 
     // Création de la grille
@@ -31,13 +33,35 @@ $(document).ready(function(){
     $.each(colors, function(key, color){
         pickColor.append('<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"></div>');
 
+        // Au clique sur une couleur
         $(".pick").click(function(){
-            color = $(this).attr("data-color");
+            color = $(this).attr("data-color"); // On récupère la couleur
+            $(this).addClass("selected"); // On met en évidence la couleur sélectionnée
+            $(this).siblings().removeClass("selected");
         });
 
-        $(".box").on("click", function() {
+        var isDown = false;
+
+        $(".box")
+        .mousedown(function() {
+            isDown = true;
+        })
+        .mousemove(function() {
+            if(isDown){
+                $(this).css("background-color", color);
+            }
+         })
+        .click(function() {
             $(this).css("background-color", color);
+        })
+        .mouseup(function() {
+            isDown = false;
         });
+
+        $(".grid").mouseleave(function(){
+            isDown = false;
+        });
+
     });
 
 
