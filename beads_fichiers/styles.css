@@ -1,6 +1,5 @@
 body {
   text-align: center;
-  /*background-color: black;*/
   transition: 0.1s;
   font-family: Helvetica, sans-serif;
   margin: 3vw auto;
@@ -22,44 +21,12 @@ body {
   margin: -0.25vw 0vw;
 }
 
-.color-picker {
-  display: block;
-  height: 15vw;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  color: white;
-}
-
-.cyan {
-  background-color: #1ebacc;
-  color: #1ebacc;
-}
-
-.yellow {
-  background-color: #ffea4e;
-  color: #ffea4e;
-}
-
-.magenta {
-  background-color: #ff2f9e;
-  color: #ff2f9e;
-}
-
-.purple {
-  background-color: #8D20AE;
-  color: #8D20AE;
-}
-
-.pink {
-  background-color: #EFA0C0;
-  color: #EFA0C0;
-}
-
-.green {
-  background-color: #32CD33;
-  color: #32CD33;
+.pick {
+    display: block;
+    width: 1vw;
+    height: 1vw;
+    border-radius: 1vw;
+    margin: 0.50vw;
 }
 
 .select-color {
@@ -77,30 +44,4 @@ body {
 .not-selected{
   color: #2D2D2D;
   /*border-bottom: 1vw solid #2D2D2D !important;*/
-}
-
-.toggle-blink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  color: white;
-  font-weight: bold;
-  height: 6vw;
-  width: 20vw;
-  border-radius: 0;
-  opacity: 0.7;
-  background-color: black;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  border: 0.5vw dotted white !important;
-  font-size: 2.75vw;
-}
-
-.opacity {
-  opacity: 1 !important;
-}
-
-.blink {
-  opacity: 0.7;
 }
