@@ -1,8 +1,7 @@
-// Ici on dessine la grille
-
 $(document).ready(function(){
 
     // Tableau de couleurs
+    // TODO: Faire des palettes de couleurs personnalisées.
     var colors = [
         "cyan",
         "blue",
@@ -17,6 +16,8 @@ $(document).ready(function(){
     ];
 
     // Création de la grille
+    // TODO: Détecter les tailles de device pour voir combien de cellules on met
+
     var grid = $('div.grid');
     for(var i=1; i<=15; i++){
         grid.append('<div class="row"></div>');
@@ -68,6 +69,15 @@ $(document).ready(function(){
         // TODO: event touch
 
     });
+
+    // TODO: Ajouter un bouton pour tout effacer
+    // TODO: Ajouter un bouton pour revenir en arrière
+
+    // TODO: Ajouter le "pot de peinture"
+
+    // TODO: Enregistrer
+
+    // TODO: Faire capture d'écran / exporter
 
 
 });
