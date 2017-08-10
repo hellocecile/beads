@@ -99,13 +99,14 @@ $(document).ready(function(){
          // en cours
     });
 
-    // TODO: Faire l'autre orientation
 
-
-
+    // TODO: Ajouter une popup au démarrage pour choisir l'orientation de la grille (peyote ou bickstitch)
+    // Orientation peyote
     $("button[name=peyote]").click(function(){
 
-        grid.preppend("div.row");
+        $("div.row").remove();
+
+        alert(documentWidth + " " + documentHeight);
 
         var nbRowsP = documentHeight / 18;
         var gridP = $('div.grid');
@@ -114,7 +115,7 @@ $(document).ready(function(){
         }
 
         var nbBeadsP = documentWidth / 16;
-        var rowP = $('div.row');
+        var rowP = $('div.rowP');
         for(var j=1; j< (nbBeadsP-2); j++){
             rowP.append('<div class="boxP"></div>');
         }
