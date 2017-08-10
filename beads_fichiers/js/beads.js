@@ -17,14 +17,21 @@ $(document).ready(function(){
 
     // Création de la grille
     // TODO: Détecter les tailles de device pour voir combien de cellules on met
+    var documentHeight = $( document ).height();
+    var documentWidth = $( document ).width();
+    // alert(documentWidth + " " + documentHeight);
+    // une perle = 16px x 14px
 
+    // nombre de rows = deviceHeight/14+2px de bordure
+    var nbRows = documentHeight / 16;
     var grid = $('div.grid');
-    for(var i=1; i<=15; i++){
+    for(var i=1; i<=nbRows; i++){
         grid.append('<div class="row"></div>');
     }
 
+    var nbBeads = documentWidth / 18;
     var row = $('div.row');
-    for(var j=1; j<=15; j++){
+    for(var j=1; j< (nbBeads-2); j++){
         row.append('<div class="box"></div>');
     }
 
@@ -70,14 +77,47 @@ $(document).ready(function(){
 
     });
 
-    // TODO: Ajouter un bouton pour tout effacer
+    // Bouton pour tout effacer
+    $("button[name=clear-all]").click(function(){
+        $(".box").css("background-color", "#FFF");
+    });
+
     // TODO: Ajouter un bouton pour revenir en arrière
+    $("button[name=undo]").click(function(){
+        $(".box").undo(); // en cours
+    });
 
     // TODO: Ajouter le "pot de peinture"
 
     // TODO: Enregistrer
+    $("button[name=save]").click(function(){
+         // en cours
+    });
 
     // TODO: Faire capture d'écran / exporter
+    $("button[name=export]").click(function(){
+         // en cours
+    });
 
+    // TODO: Faire l'autre orientation
+
+
+
+    $("button[name=peyote]").click(function(){
+
+        grid.preppend("div.row");
+
+        var nbRowsP = documentHeight / 18;
+        var gridP = $('div.grid');
+        for(var i=1; i<=nbRowsP; i++){
+            gridP.append('<div class="rowP"></div>');
+        }
+
+        var nbBeadsP = documentWidth / 16;
+        var rowP = $('div.row');
+        for(var j=1; j< (nbBeadsP-2); j++){
+            rowP.append('<div class="boxP"></div>');
+        }
+    });
 
 });

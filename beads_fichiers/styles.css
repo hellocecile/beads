@@ -17,9 +17,16 @@ body {
 .row{
     height: 15px;
 }
+.rowP{
+    height: 17px;
+}
 
 .row:nth-child(2n) {
     left: 7px;
+    position: relative;
+}
+.rowP:nth-child(2n) {
+    left: 8px;
     position: relative;
 }
 
@@ -27,6 +34,14 @@ body {
   border: 1px solid #CCC;
   height: 14px;
   width: 16px;
+  display: inline-block;
+  margin: 0;
+  border-radius: 2px;
+}
+.boxP {
+  border: 1px solid #CCC;
+  height: 16px;
+  width: 14px;
   display: inline-block;
   margin: 0;
   border-radius: 2px;
