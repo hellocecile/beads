@@ -2,12 +2,25 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="libraries/jquery.mobile-1.4.5.min.css">
     <link rel="stylesheet" type="text/css" href="beads_fichiers/styles.css">
     <title></title>
   </head>
 
   <body>
+    <!-- <div data-role="page" id="#page-welcome">
+        lovelyoupi <br/>
+        presents<br/>
+        love beading <hr/>
+        Select your grid <br/>
+        <!-- <button type="button" name="choose">peyote</button> -->
+        <!-- <a href="#page-draw">click</a> -->
+        <!-- <button type="button" name="grid-peyote">peyote</button> -->
+        <!-- <button type="button" name="grid-brickstitch">brickstitch</button> -->
+    <!-- </div> -->
+
+
     <div data-role="page" id="#page-draw">
 
       <div data-role="header" data-position="fixed" data-tap-toggle="false">
@@ -23,10 +36,11 @@
         <hr/>
         <div class="#more">
             <button type="button" name="clear-all">clear all</button>
-            <button type="button" name="undo">undo</button>
+            <!-- <button type="button" name="undo">undo</button> -->
             <button type="button" name="save">save</button>
-            <button type="button" name="export">export</button>
-            <button type="button" name="peyote">peyote</button>
+            <!-- <button type="button" name="export">export</button> -->
+            <!-- <button type="button" name="grid-peyote">peyote</button> -->
+            <a href="#infos" data-rel="popup">infos</a>
         </div>
     </hr/>
       </div>
@@ -37,6 +51,10 @@
         <div class="grid">
         </div>
 
+      </div>
+
+      <div class="" data-role="popup" id="infos">
+          version 1.x "ultra-basique" – developpé pour les perleuses par @lovelyoupi
       </div>
 
       <!-- <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-fullscreen="true">

@@ -15,24 +15,34 @@ $(document).ready(function(){
         "black",
     ];
 
-    // Création de la grille
-    // TODO: Détecter les tailles de device pour voir combien de cellules on met
+    // Détecter les tailles de device pour voir combien de cellules on met
     var documentHeight = $( document ).height();
     var documentWidth = $( document ).width();
     // alert(documentWidth + " " + documentHeight);
-    // une perle = 16px x 14px
-
-    // nombre de rows = deviceHeight/14+2px de bordure
-    var nbRows = documentHeight / 16;
     var grid = $('div.grid');
-    for(var i=1; i<=nbRows; i++){
-        grid.append('<div class="row"></div>');
-    }
 
-    var nbBeads = documentWidth / 18;
-    var row = $('div.row');
-    for(var j=1; j< (nbBeads-2); j++){
-        row.append('<div class="box"></div>');
+    // Si on a déjà qqch d'enregistré en localStorage
+    if(localStorage["pattern"]){
+
+        var pattern = JSON.parse(localStorage["pattern"]);
+        grid.append(pattern);
+
+    } else {
+
+        // Création de la grille
+        // une perle = 16px x 14px
+
+        // nombre de rows = deviceHeight/14+2px de bordure
+        var nbRows = documentHeight / 16;
+        for(var i=1; i<=nbRows; i++){
+            grid.append('<div class="row"></div>');
+        }
+
+        var nbBeads = documentWidth / 18;
+        var row = $('div.row');
+        for(var j=1; j< (nbBeads-2); j++){
+            row.append('<div class="box"></div>');
+        }
     }
 
     // Color picker
@@ -89,9 +99,10 @@ $(document).ready(function(){
 
     // TODO: Ajouter le "pot de peinture"
 
-    // TODO: Enregistrer
+    // Enregistrer notre motif en cours
     $("button[name=save]").click(function(){
-         // en cours
+         var pattern = grid.html();
+         localStorage["pattern"] = JSON.stringify(pattern);
     });
 
     // TODO: Faire capture d'écran / exporter
@@ -102,12 +113,12 @@ $(document).ready(function(){
 
     // TODO: Ajouter une popup au démarrage pour choisir l'orientation de la grille (peyote ou bickstitch)
     // Orientation peyote
-    $("button[name=peyote]").click(function(){
+    // $("button[name=choose]").click(function(){
+     $("button[name=grid-peyote]").click(function(){
 
-        $("div.row").remove();
+         $("div.row").remove();
 
-        alert(documentWidth + " " + documentHeight);
-
+        //alert(documentWidth + " " + documentHeight);
         var nbRowsP = documentHeight / 18;
         var gridP = $('div.grid');
         for(var i=1; i<=nbRowsP; i++){
