@@ -96,6 +96,9 @@ $(document).ready(function(){
                 $(this).css("background-color", color);
             }
          })
+         .click(function() {
+             $(this).css("background-color", color);
+        })
         .mouseup(function() {
             isDown = false;
         });
