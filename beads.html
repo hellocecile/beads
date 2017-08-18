@@ -2,10 +2,11 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <link rel="stylesheet" href="libraries/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="libraries/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="beads_fichiers/styles.css">
-    <title></title>
+    <title>Beading fun !</title>
   </head>
 
   <body>
@@ -25,22 +26,22 @@
 
       <div data-role="header" data-position="fixed" data-tap-toggle="false">
         <h1>Créez votre motif !</h1>
-        <a href="#myPanel" class="ui-btn ui-btn-inline">Palette</a>
+        <a href="#myPanel" class="ui-btn ui-btn-inline">Palette <i class="fa fa-paint-brush" aria-hidden="true"></i></a>
       </div>
 
       <div data-role="panel" id="myPanel" data-display="overlay" data-position-fixed="true" data-dismissible="false" class="color-picker">
         <!-- <h2>Panel Header..</h2> -->
-        <a href="#page-draw" data-rel="close" class="ui-btn ui-btn-inline">x</a>
+        <a href="#page-draw" data-rel="close" class="ui-btn ui-btn-inline"><i class="fa fa-times" aria-hidden="true"></i></a>
 
         <div class="pick-color"></div>
         <hr/>
         <div class="#more">
-            <button type="button" name="clear-all">tout effacer</button>
+            <button type="button" name="clear-all"><i class="fa fa-trash" aria-hidden="true"></i> tout effacer</button>
             <!-- <button type="button" name="undo">undo</button> -->
-            <button type="button" name="save">enregistrer</button>
+            <button type="button" name="save"><i class="fa fa-floppy-o" aria-hidden="true"></i> enregistrer</button>
             <!-- <button type="button" name="export">export</button> -->
             <!-- <button type="button" name="grid-peyote">peyote</button> -->
-            <a href="#infos" data-rel="popup">infos</a>
+            <a href="#infos" data-rel="popup"><i class="fa fa-info" aria-hidden="true"></i> infos</a>
         </div>
     </hr/>
       </div>
