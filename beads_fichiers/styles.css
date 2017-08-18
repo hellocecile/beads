@@ -5,12 +5,24 @@ body {
   box-sizing: border-box;
 }
 
+html, body{
+     max-width:100%;
+     max-height:100%;
+     overflow:hidden;
+}
+
 
 /*****JQUERY OVERRIDE*****/
 
 .ui-panel {
     width: initial;
+    max-width: 140px;
 }
+
+.ui-btn, .ui-page-theme-a a {
+    font-size: 12px;
+}
+
 
 /*************************/
 
@@ -47,8 +59,12 @@ body {
   border-radius: 2px;
 }
 
+.pick-color {
+    text-align: left;
+}
+
 .pick {
-    display: block;
+    display: inline-block;
     width: 20px;
     height: 20px;
     border-radius: 20px;

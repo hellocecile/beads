@@ -1,19 +1,44 @@
 $(document).ready(function(){
 
+
+    //target the entire page, and listen for touch events
+    // document.body.addEventListener('touchmove', function(event) {
+    //   event.preventDefault();
+    // }, false);
+
     // Tableau de couleurs
-    // TODO: Faire des palettes de couleurs personnalisées.
-    var colors = [
-        "cyan",
-        "blue",
-        "yellow",
-        "orange",
-        "red",
-        "magenta",
-        "pink",
-        "green",
-        "white",
-        "black",
-    ];
+    var colors = {
+        "galvanized blush" : "#BB8E9A",
+        "gold" : "#BD8B4D",
+        "silver" : "#A7ABAC",
+
+        "carnation" : "#E64C92",
+        "dark salmon" : "#EA747C",
+        "light peach" : "#E9B7A3",
+
+        "light mint" : "#A4D2BD",
+        "tea rose" : "#F0997D",
+        "light lemon ice" : "#ECDC6D",
+
+        "bisque white" : "#E5D8D9",
+        "blush" : "#D7ACAE",
+        "light terracotta" : "#CAAA9B",
+
+        "red" : "#E71B3E",
+        "mandarin" : "#F38423",
+        "kelly green" : "#1F8F5D",
+
+        "ghost grey" : "#8F9EAF",
+        "cobalt" : "#111F55",
+        "turquoise" : "#0CA8D8",
+        
+        "beige" : "#A79695",
+        "chocolate" : "#482F3F",
+        "cognac" : "#5E4638",
+
+        "white" : "#F5F9F9",
+        "black" : "#000000",
+    };
 
     // Détecter les tailles de device pour voir combien de cellules on met
     var documentHeight = $( document ).height();
@@ -78,14 +103,43 @@ $(document).ready(function(){
             isDown = false;
         });
 
-        $(".box").on("click", function() {
-            $(this).css("background-color", color);
-        })
 
         // Version mobile
         // TODO: event touch
+        // $('.box').on({
+        //     'touchstart' : function(){
+        //         // instructions
+        //         isDown = true;
+        //     },
+        //     'touchmove' : function(){
+        //         if(isDown){
+        //             $(this).css("background-color", color);
+        //         }
+        //     },
+        //     'touchend' : function(){
+        //         isDown = false;
+        //     }
+        //  });
+
+        // test mobile 2
+        // $(".box").on("touchstart tap", function() {
+        //     isDown = true;
+        // });
+        //
+        // $(".box").on("swipe", function() {
+        //     $.event.special.swipe.horizontalDistanceThreshold = 10;
+        //     //if(isDown){
+        //         $(this).css("background-color", color);
+        //     //}
+        // });
+        //
+        // $(".box").on("touchend", function() {
+        //     isDown = false;
+        // });
 
     });
+
+    // TODO: ajouter bouton gomme (removeClass...)
 
     // Bouton pour tout effacer
     $("button[name=clear-all]").click(function(){
