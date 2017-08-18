@@ -31,12 +31,13 @@ $(document).ready(function(){
         "ghost grey" : "#8F9EAF",
         "cobalt" : "#111F55",
         "turquoise" : "#0CA8D8",
-        
+
         "beige" : "#A79695",
         "chocolate" : "#482F3F",
         "cognac" : "#5E4638",
 
-        "white" : "#F5F9F9",
+        // "white" : "#F5F9F9",
+        "white" : "#FFFFFF",
         "black" : "#000000",
     };
 

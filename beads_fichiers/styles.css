@@ -21,7 +21,14 @@ html, body{
 
 .ui-btn, .ui-page-theme-a a {
     font-size: 12px;
+    font-weight: initial;
+    text-decoration: none;
 }
+
+.ui-content {
+    font-size: 0.8em;
+}
+
 
 
 /*************************/

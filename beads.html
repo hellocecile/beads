@@ -25,7 +25,7 @@
     <div data-role="page" id="#page-draw">
 
       <div data-role="header" data-position="fixed" data-tap-toggle="false">
-        <h1>Créez votre motif !</h1>
+        <h1>Beading fun – Créez votre motif</h1>
         <a href="#myPanel" class="ui-btn ui-btn-inline">Palette <i class="fa fa-paint-brush" aria-hidden="true"></i></a>
       </div>
 
@@ -41,7 +41,7 @@
             <button type="button" name="save"><i class="fa fa-floppy-o" aria-hidden="true"></i> enregistrer</button>
             <!-- <button type="button" name="export">export</button> -->
             <!-- <button type="button" name="grid-peyote">peyote</button> -->
-            <a href="#infos" data-rel="popup"><i class="fa fa-info" aria-hidden="true"></i> infos</a>
+            <a href="#infos" data-rel="popup" data-position-to="window"><i class="fa fa-info" aria-hidden="true"></i> infos</a>
         </div>
     </hr/>
       </div>
@@ -54,11 +54,14 @@
 
       </div>
 
-      <div class="" data-role="popup" id="infos">
-          version 1.x "ultra-basique"
-          </br/>developpé pour les perleuses
-          <br/><img src="beads_fichiers/img/lovelyoupi.png" height="50px" alt="lovelyoupi">
-
+      <div class="" data-role="popup" id="infos"  data-overlay-theme="b">
+          <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+          <div data-role="header"><h1>A propos</h1></div>
+          <div data-role="main" class="ui-content">version 1.x "ultra-basique"
+              <br/>developpé pour les perleuses :)
+              <br/><a href="http://www.lovelyoupi.fr"><img src="beads_fichiers/img/lovelyoupi.png" height="50px" alt="lovelyoupi"></a>
+            <br/><a href="http://lovelyoupi.fr/beadingfun/">en savoir plus & questions</a>
+          </div>
       </div>
 
       <!-- <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-fullscreen="true">
