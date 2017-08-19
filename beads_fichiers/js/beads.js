@@ -170,6 +170,8 @@ $(document).ready(function(){
     $("button[name=save]").click(function(){
          var pattern = grid.html();
          localStorage["pattern"] = JSON.stringify(pattern);
+         // message de confirmation
+         $(this).notify("Enregistré", { elementPosition:"right middle", className: "success" });
     });
 
     // TODO: Faire capture d'écran / exporter
