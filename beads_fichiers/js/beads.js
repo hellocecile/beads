@@ -28,17 +28,26 @@ $(document).ready(function(){
         "mandarin" : "#F38423",
         "kelly green" : "#1F8F5D",
 
-        "ghost grey" : "#8F9EAF",
         "cobalt" : "#111F55",
         "turquoise" : "#0CA8D8",
+        "turquoise green" : "#87D2D7",
 
-        "beige" : "#A79695",
+
+        "light sky blue" : "#A7C1DC",
+        "agathe blue" : "#9CADE5",
+        "light violet" : "#D8C3E5",
+
+        "brown beige" : "#A79695",
         "chocolate" : "#482F3F",
         "cognac" : "#5E4638",
 
+        "beige" : "#EEE0C6",
         // "white" : "#F5F9F9",
         "white" : "#FFFFFF",
         "black" : "#000000",
+
+        "ghost grey" : "#8F9EAF",
+
     };
 
     // Détecter les tailles de device pour voir combien de cellules on met
