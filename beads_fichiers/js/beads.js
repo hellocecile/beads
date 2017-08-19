@@ -42,11 +42,12 @@ $(document).ready(function(){
         "cognac" : "#5E4638",
 
         "beige" : "#EEE0C6",
-        // "white" : "#F5F9F9",
-        "white" : "#FFFFFF",
+        "white" : "#F5F9F9",
         "black" : "#000000",
 
         "ghost grey" : "#8F9EAF",
+        "eraser" : "#FFFFFF",
+
 
     };
 
@@ -84,7 +85,12 @@ $(document).ready(function(){
     var pickColor = $(".pick-color");
 
     $.each(colors, function(key, color){
-        pickColor.append('<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"></div>');
+
+        if(key == "eraser"){ // mise en forme bouton gomme
+            pickColor.append('<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa fa-eraser" aria-hidden="true"></i></div>');
+        } else {
+            pickColor.append('<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa" aria-hidden="true"></i></div>');
+        }
 
         // Au clique sur une couleur
         $(".pick").click(function(){
@@ -161,7 +167,7 @@ $(document).ready(function(){
 
     // TODO: Ajouter un bouton pour revenir en arrière
     $("button[name=undo]").click(function(){
-        $(".box").undo(); // en cours
+        // $(".box").undo(); // en cours
     });
 
     // TODO: Ajouter le "pot de peinture"
