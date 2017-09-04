@@ -6,6 +6,8 @@ $(document).ready(function(){
     //   event.preventDefault();
     // }, false);
 
+    var actions = [];
+    var color;
     // Tableau de couleurs
     var colors = {
         "galvanized blush" : "#BB8E9A",
@@ -92,36 +94,6 @@ $(document).ready(function(){
             pickColor.append('<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa" aria-hidden="true"></i></div>');
         }
 
-        // Au clique sur une couleur
-        $(".pick").click(function(){
-            color = $(this).attr("data-color"); // On récupère la couleur
-            $(this).addClass("selected"); // On met en évidence la couleur sélectionnée
-            $(this).siblings().removeClass("selected");
-        });
-
-        var isDown = false;
-
-        // Version desktop
-        $(".box")
-        .mousedown(function() {
-            isDown = true;
-        })
-        .mousemove(function() {
-            if(isDown){
-                $(this).css("background-color", color);
-            }
-         })
-         .click(function() {
-             $(this).css("background-color", color);
-        })
-        .mouseup(function() {
-            isDown = false;
-        });
-
-        $(".grid").mouseleave(function(){
-            isDown = false;
-        });
-
 
         // Version mobile
         // TODO: event touch
@@ -157,6 +129,45 @@ $(document).ready(function(){
         // });
 
     });
+
+
+    // Au clique sur une couleur
+    $(".pick").click(function(){
+        color = $(this).attr("data-color"); // On récupère la couleur
+        $(this).addClass("selected"); // On met en évidence la couleur sélectionnée
+        $(this).siblings().removeClass("selected");
+    });
+
+    var isDown = false;
+
+    // Version desktop
+    $(".box")
+    .mousedown(function() {
+        isDown = true;
+    })
+    .mousemove(function() {
+        if(isDown){
+         colorBead($(this));
+        }
+     })
+     .click(function() {
+         colorBead($(this));
+    })
+    .mouseup(function() {
+        isDown = false;
+    });
+
+    $(".grid").mouseleave(function(){
+        isDown = false;
+    });
+
+    function colorBead(bead){
+      actions.push(bead);
+      $(bead).css("background-color", color);
+
+      localStorage["actions"] = JSON.stringify(actions);
+    }
+
 
     // TODO: ajouter bouton gomme (removeClass...)
 
