@@ -163,13 +163,21 @@ $(document).ready(function(){
 
     function colorBead(bead){
       actions.push(bead);
-      $(bead).css("background-color", color);
+
+      $(bead).css("background", "-moz-linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+      $(bead).css("background", "-webkit-linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+      $(bead).css("background", "linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+
+    if(color == "#FFFFFF") {
+        $(bead).css("border-color", "#CCC");
+
+    } else {
+        $(bead).css("border-color", color);
+        $(bead).css("border-right-color", "#CCC");
+    }
 
       localStorage["actions"] = JSON.stringify(actions);
     }
-
-
-    // TODO: ajouter bouton gomme (removeClass...)
 
     // Bouton pour tout effacer
     $("button[name=clear-all]").click(function(){
