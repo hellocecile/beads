@@ -84,17 +84,58 @@ $(document).ready(function(){
     }
 
     // Color picker
-    var pickColor = $(".pick-color");
+	var colorPicker = (function(){
+		
+		//cache DOM
+		var $pickColor = $(".pick-color");
+		var $colorIcon;
+		
+		//initialisation
+		function _init(){
+			createWindow(colors);
+			bindEvt();
+		}
+		//bind events
+		function bindEvt(){
+			// Au clique sur une couleur
+			$colorIcon.click(function(){
+				colorPicker.setColor($(this));
+			});
+		}
+		
+		// Création de la fenêtre colorPicker
+		function createWindow(colors){
+			$.each(colors, function(key, color){
+				var html = '<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa ';
+				html += (key == "eraser") ? 'fa-eraser' : ''; // mise en forme bouton gomme
+				html += '" aria-hidden="true"></i></div>';
+				$pickColor.append(html);
+			});
+			
+			$colorIcon = $pickColor.find(".pick");		
+		}
+		
+		//Définition de la couleur
+		function _setColor(colorElm){
+			color = colorElm.attr("data-color"); // On récupère la couleur
+			selectedColor(colorElm); // On met en évidence la couleur sélectionnée
+		}
+		
+		//Mise en évidence de la couleur sélectionnée
+		function selectedColor(colorElm){
+			colorElm.addClass("selected"); // On met en évidence la couleur sélectionnée
+			colorElm.siblings().removeClass("selected");
+		}
+				
+		return {
+			init: _init,
+			setColor: _setColor
+		}
+	})();
+    
+	colorPicker.init();
 
     $.each(colors, function(key, color){
-
-        if(key == "eraser"){ // mise en forme bouton gomme
-            pickColor.append('<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa fa-eraser" aria-hidden="true"></i></div>');
-        } else {
-            pickColor.append('<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa" aria-hidden="true"></i></div>');
-        }
-
-
         // Version mobile
         // TODO: event touch
         // $('.box').on({
@@ -131,12 +172,7 @@ $(document).ready(function(){
     });
 
 
-    // Au clique sur une couleur
-    $(".pick").click(function(){
-        color = $(this).attr("data-color"); // On récupère la couleur
-        $(this).addClass("selected"); // On met en évidence la couleur sélectionnée
-        $(this).siblings().removeClass("selected");
-    });
+    
 
     var isDown = false;
 
