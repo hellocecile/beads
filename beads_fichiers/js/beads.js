@@ -53,6 +53,7 @@ $(document).ready(function(){
 
     };
 	
+	// Module beadGrid
 	var beadGrid = (function(){
 		var pattern = localStorage["pattern"] ? JSON.parse(localStorage["pattern"]) : '';
 		// Détecter les tailles de device pour voir combien de cellules on met
@@ -61,6 +62,8 @@ $(document).ready(function(){
 		// nombre de rows = deviceHeight/14+2px de bordure
         var nbRows = documentHeight / 16;
 		var nbBeads = documentWidth / 18;
+		var beadCell = '<div class="box"></div>';
+		var $beadRow = $('<div class="row"></div>');
 		
 		//cache DOM
 		var $grid = $('div.grid');
@@ -69,11 +72,10 @@ $(document).ready(function(){
 		//initialisation
 		function _init(){
 			// Création de la grille
-			if(pattern){
+			if(pattern){ // Si on a déjà qqch d'enregistré en localStorage
 				restoreGrid(pattern);
 			} else {
-				createLine();
-				createBead();
+				createGrid();
 			}
 					
 			bindEvt();
@@ -83,54 +85,57 @@ $(document).ready(function(){
 		function bindEvt(){
 			// Au clique sur enregistrer
 			$btnSave.click(function(){
-				beadGrid.saveGrid();
+				beadGrid.saveGrid($(this));
 			});
 		}
 		
-		function createLine(){
-			for(var i=1; i<=nbRows; i++){
-				$grid.append('<div class="row"></div>');
-			}
-		}
-		
-		function createBead(){
-			var $row = $('div.row');
+		// Création d'une ligne
+		function createRow(){
 			for(var j=1; j< (nbBeads-2); j++){
-				$row.append('<div class="box"></div>');
+				$beadRow.append(beadCell);
 			}
 		}
 		
+		// Création de la grille
+        // une perle = 16px x 14px
+		function createGrid(){
+			createRow();
+			for(var i=1; i<=nbRows; i++){
+				$grid.append($beadRow.clone());				
+			}
+		}
+		
+		// Réstauration d'un schéma enregistré
 		function restoreGrid(pattern){	
 			$grid.append(pattern);
 		}
 		
 		// Enregistrer notre motif en cours
-		function _saveGrid(){
+		function _saveGrid($btn){
 			pattern = $grid.html();
 			localStorage["pattern"] = JSON.stringify(pattern);
 			// message de confirmation
-			$(this).notify("Enregistré", { elementPosition:"right middle", className: "success" });
-		};
+			$btn.notify("Enregistré", { elementPosition:"right middle", className: "success" });
+		}
+		
+		// Coloration d'une perle
+		function _colorBead(bead){
+		  actions.push(bead);
+		  $(bead).css("background-color", color);
+
+		  localStorage["actions"] = JSON.stringify(actions);
+		}
 		
 		return {
 			init: _init,
-			saveGrid: _saveGrid
+			saveGrid: _saveGrid,
+			colorBead: _colorBead
 		}
 		
 	})()
 
-   
 
-    // Si on a déjà qqch d'enregistré en localStorage
-    
-
-        // Création de la grille
-        // une perle = 16px x 14px
-
-        
-
-
-    // Color picker
+    // Module colorPicker
 	var colorPicker = (function(){
 		
 		//cache DOM
@@ -231,11 +236,11 @@ $(document).ready(function(){
     })
     .mousemove(function() {
         if(isDown){
-         colorBead($(this));
+         beadGrid.colorBead($(this));
         }
      })
      .click(function() {
-         colorBead($(this));
+         beadGrid.colorBead($(this));
     })
     .mouseup(function() {
         isDown = false;
@@ -245,12 +250,7 @@ $(document).ready(function(){
         isDown = false;
     });
 
-    function colorBead(bead){
-      actions.push(bead);
-      $(bead).css("background-color", color);
-
-      localStorage["actions"] = JSON.stringify(actions);
-    }
+    
 
 
     // TODO: ajouter bouton gomme (removeClass...)
