@@ -52,36 +52,83 @@ $(document).ready(function(){
 
 
     };
+	
+	var beadGrid = (function(){
+		var pattern = localStorage["pattern"] ? JSON.parse(localStorage["pattern"]) : '';
+		// Détecter les tailles de device pour voir combien de cellules on met
+		var documentHeight = $( document ).height();
+		var documentWidth = $( document ).width();
+		// nombre de rows = deviceHeight/14+2px de bordure
+        var nbRows = documentHeight / 16;
+		var nbBeads = documentWidth / 18;
+		
+		//cache DOM
+		var $grid = $('div.grid');
+		var $btnSave = $('button[name=save]')
+		 
+		//initialisation
+		function _init(){
+			// Création de la grille
+			if(pattern){
+				restoreGrid(pattern);
+			} else {
+				createLine();
+				createBead();
+			}
+					
+			bindEvt();
+		}
+		
+		//bind events
+		function bindEvt(){
+			// Au clique sur enregistrer
+			$btnSave.click(function(){
+				beadGrid.saveGrid();
+			});
+		}
+		
+		function createLine(){
+			for(var i=1; i<=nbRows; i++){
+				$grid.append('<div class="row"></div>');
+			}
+		}
+		
+		function createBead(){
+			var $row = $('div.row');
+			for(var j=1; j< (nbBeads-2); j++){
+				$row.append('<div class="box"></div>');
+			}
+		}
+		
+		function restoreGrid(pattern){	
+			$grid.append(pattern);
+		}
+		
+		// Enregistrer notre motif en cours
+		function _saveGrid(){
+			pattern = $grid.html();
+			localStorage["pattern"] = JSON.stringify(pattern);
+			// message de confirmation
+			$(this).notify("Enregistré", { elementPosition:"right middle", className: "success" });
+		};
+		
+		return {
+			init: _init,
+			saveGrid: _saveGrid
+		}
+		
+	})()
 
-    // Détecter les tailles de device pour voir combien de cellules on met
-    var documentHeight = $( document ).height();
-    var documentWidth = $( document ).width();
-    // alert(documentWidth + " " + documentHeight);
-    var grid = $('div.grid');
+   
 
     // Si on a déjà qqch d'enregistré en localStorage
-    if(localStorage["pattern"]){
-
-        var pattern = JSON.parse(localStorage["pattern"]);
-        grid.append(pattern);
-
-    } else {
+    
 
         // Création de la grille
         // une perle = 16px x 14px
 
-        // nombre de rows = deviceHeight/14+2px de bordure
-        var nbRows = documentHeight / 16;
-        for(var i=1; i<=nbRows; i++){
-            grid.append('<div class="row"></div>');
-        }
+        
 
-        var nbBeads = documentWidth / 18;
-        var row = $('div.row');
-        for(var j=1; j< (nbBeads-2); j++){
-            row.append('<div class="box"></div>');
-        }
-    }
 
     // Color picker
 	var colorPicker = (function(){
@@ -133,6 +180,7 @@ $(document).ready(function(){
 		}
 	})();
     
+	beadGrid.init();
 	colorPicker.init();
 
     $.each(colors, function(key, color){
@@ -219,13 +267,7 @@ $(document).ready(function(){
 
     // TODO: Ajouter le "pot de peinture"
 
-    // Enregistrer notre motif en cours
-    $("button[name=save]").click(function(){
-         var pattern = grid.html();
-         localStorage["pattern"] = JSON.stringify(pattern);
-         // message de confirmation
-         $(this).notify("Enregistré", { elementPosition:"right middle", className: "success" });
-    });
+    
 
     // TODO: Faire capture d'écran / exporter
     $("button[name=export]").click(function(){
