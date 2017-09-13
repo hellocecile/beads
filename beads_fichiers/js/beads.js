@@ -48,7 +48,7 @@ $(document).ready(function(){
         "black" : "#000000",
 
         "ghost grey" : "#8F9EAF",
-        "eraser" : "#FFFFFF",
+        "eraser" : "",
 
 
     };
@@ -72,7 +72,9 @@ $(document).ready(function(){
 		 
 		//initialisation
 		function _init(){
-			// Création de la grille
+			// Création de la grille			
+				// Test d'un fond strillé
+				//$grid.css("background", "repeating-linear-gradient(-55deg, #dcdcdc, #f8f8f8 2px, #f8f8ff 5px, #f8f8ff 5px)");
 			if(pattern){ // Si on a déjà qqch d'enregistré en localStorage
 				restoreGrid(pattern);
 			} else {
