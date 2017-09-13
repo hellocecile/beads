@@ -67,7 +67,8 @@ $(document).ready(function(){
 		
 		//cache DOM
 		var $grid = $('div.grid');
-		var $btnSave = $('button[name=save]')
+		var $btnSave = $('button[name=save]');
+		var $btnClear = $("button[name=clear-all]");
 		 
 		//initialisation
 		function _init(){
@@ -86,6 +87,10 @@ $(document).ready(function(){
 			// Au clique sur enregistrer
 			$btnSave.click(function(){
 				beadGrid.saveGrid($(this));
+			});
+			// Bouton pour tout effacer
+			$btnClear.click(function(){
+				clearGrid();
 			});
 		}
 		
@@ -124,6 +129,11 @@ $(document).ready(function(){
 		  $(bead).css("background-color", color);
 
 		  localStorage["actions"] = JSON.stringify(actions);
+		}
+		
+		// RAZ grille
+		function clearGrid(){
+			$grid.children().children().css("background-color", "");
 		}
 		
 		return {
@@ -255,10 +265,7 @@ $(document).ready(function(){
 
     // TODO: ajouter bouton gomme (removeClass...)
 
-    // Bouton pour tout effacer
-    $("button[name=clear-all]").click(function(){
-        $(".box").css("background-color", "#FFF");
-    });
+    
 
     // TODO: Ajouter un bouton pour revenir en arrière
     $("button[name=undo]").click(function(){
