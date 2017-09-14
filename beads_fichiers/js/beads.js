@@ -63,11 +63,11 @@ $(document).ready(function(){
 		
 		switch(beadDir){
 			case 'peyote':
-				var gridInf = {nbRow:18, nbBead:16, classBox:'boxP', classRow:'rowP'};
+				var gridInf = {nbRow:18, nbBead:16, classBox:'boxP', classRow:'rowP', colAngle:'to bottom'};
 				break;
 			case 'bickstitch':
 			default:
-				var gridInf = {nbRow:16, nbBead:18, classBox:'', classRow:''};
+				var gridInf = {nbRow:16, nbBead:18, classBox:'', classRow:'', colAngle:'to right'};
 		 }		
         var nbRows = documentHeight / gridInf.nbRow;
 		var nbBeads = documentWidth / gridInf.nbBead;
@@ -149,22 +149,29 @@ $(document).ready(function(){
 		// Coloration d'une perle
 		function _colorBead(bead){
 		  actions.push(bead);
-		  if(!color){
+		  if(color){
 			  //$(bead).css("background-color", color);
-			  $(bead).css("background", "-moz-linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
-			  $(bead).css("background", "-webkit-linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
-			  $(bead).css("background", "linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+			  $(bead).css("background", "-moz-linear-gradient("+gridInf.colAngle+", "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+			  $(bead).css("background", "-webkit-linear-gradient("+gridInf.colAngle+", "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+			  $(bead).css("background", "linear-gradient("+gridInf.colAngle+", "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+			  $(bead).attr('data-color', color);
 		  }else{
-			  $(bead).removeAttr('style');
+			  unColorBead($(bead));
 		  }
 
 		  localStorage["actions"] = JSON.stringify(actions);
 		}
 		
+		// Décoloration d'une perle
+		function unColorBead(bead){
+		  actions.push(bead);
+		  $(bead).removeAttr('style data-color');
+		  localStorage["actions"] = JSON.stringify(actions);
+		}
+		
 		// RAZ grille
 		function clearGrid(){
-			//$grid.children().children().css("background-color", "");
-			$grid.children().children().removeAttr('style');
+			unColorBead($grid.children().children());
 		}
 		
 		return {
