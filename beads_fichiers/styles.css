@@ -82,3 +82,16 @@ html, body{
 .selected {
     border: 1px solid #333;
 }
+
+.beadDir{
+	content: '';
+    display: block;
+    width: 19px;
+    height: 15px;
+    background-color: red;
+    border-radius: 5px;
+}
+.peyote{
+	width: 15px;
+    height: 19px;
+}

@@ -60,10 +60,19 @@ $(document).ready(function(){
 		var documentHeight = $( document ).height();
 		var documentWidth = $( document ).width();
 		// nombre de rows = deviceHeight/14+2px de bordure
-        var nbRows = documentHeight / 16;
-		var nbBeads = documentWidth / 18;
-		var beadCell = '<div class="box"></div>';
-		var $beadRow = $('<div class="row"></div>');
+		
+		switch(beadDir){
+			case 'peyote':
+				var gridInf = {nbRow:18, nbBead:16, classBox:'boxP', classRow:'rowP'};
+				break;
+			case 'bickstitch':
+			default:
+				var gridInf = {nbRow:16, nbBead:18, classBox:'', classRow:''};
+		 }		
+        var nbRows = documentHeight / gridInf.nbRow;
+		var nbBeads = documentWidth / gridInf.nbBead;
+		var beadCell = '<div class="box '+gridInf.classBox+'"></div>';
+		var $beadRow = $('<div class="row '+gridInf.classRow+'"></div>');
 		
 		//cache DOM
 		var $grid = $('div.grid');
@@ -72,6 +81,18 @@ $(document).ready(function(){
 		 
 		//initialisation
 		function _init(){
+			// $("#beadDir").dialog({ autoOpen: false });
+			// $( "#beadDir" ).dialog( "open" );
+		// $("#bickstich").click(function(){
+				// var beadDir = "bickstich";
+				// console.log('bickstich');
+			// });
+			// Bouton pour tout effacer
+			// $("#peyote").click(function(){
+				// var beadDir = "peyote";
+				// console.log('peyote');
+			// });
+			
 			// Création de la grille			
 				// Test d'un fond strillé
 				//$grid.css("background", "repeating-linear-gradient(-55deg, #dcdcdc, #f8f8f8 2px, #f8f8ff 5px, #f8f8ff 5px)");
@@ -197,9 +218,10 @@ $(document).ready(function(){
 		}
 	})();
     
+
 	beadGrid.init();
 	colorPicker.init();
-
+	
     $.each(colors, function(key, color){
         // Version mobile
         // TODO: event touch
