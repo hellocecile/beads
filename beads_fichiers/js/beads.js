@@ -149,14 +149,22 @@ $(document).ready(function(){
 		// Coloration d'une perle
 		function _colorBead(bead){
 		  actions.push(bead);
-		  $(bead).css("background-color", color);
+		  if(!color){
+			  //$(bead).css("background-color", color);
+			  $(bead).css("background", "-moz-linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+			  $(bead).css("background", "-webkit-linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+			  $(bead).css("background", "linear-gradient(to right, "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
+		  }else{
+			  $(bead).removeAttr('style');
+		  }
 
 		  localStorage["actions"] = JSON.stringify(actions);
 		}
 		
 		// RAZ grille
 		function clearGrid(){
-			$grid.children().children().css("background-color", "");
+			//$grid.children().children().css("background-color", "");
+			$grid.children().children().removeAttr('style');
 		}
 		
 		return {
