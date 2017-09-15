@@ -53,6 +53,63 @@ $(document).ready(function(){
 
     };
 	
+	// subpub (publish subscribe)
+	var subpub = {
+	  events: {},
+	  on: function (eventName, fn) {
+		this.events[eventName] = this.events[eventName] || [];
+		this.events[eventName].push(fn);
+	  },
+	  off: function(eventName, fn) {
+		if (this.events[eventName]) {
+		  for (var i = 0; i < this.events[eventName].length; i++) {
+			if (this.events[eventName][i] === fn) {
+			  this.events[eventName].splice(i, 1);
+			  break;
+			}
+		  };
+		}
+	  },
+	  emit: function (eventName, data) {
+		if (this.events[eventName]) {
+		  this.events[eventName].forEach(function(fn) {
+			fn(data);
+		  });
+		}
+	  }
+	};
+	
+	// Module beadTools
+	var beadTools = (function(){
+		//cache DOM
+		var $btnSave = $('button[name=save]');
+		var $btnClear = $("button[name=clear-all]");
+		var $btnGridOrient = $("button[name=bead-orientation]");
+		
+		//bind events
+		subpub.on("gridOrient", setBtnOrient);
+		// Au clique sur enregistrer
+		$btnSave.click(function(){
+			subpub.emit("saveGrid", $(this));
+		});
+		// Bouton pour tout effacer
+		$btnClear.click(function(){	
+			subpub.emit("clearGrid", );
+		});			
+		// Bouton pour orientation perle
+		$btnGridOrient.click(function(){
+			var newDir = $btnGridOrient.attr("data-newGridDir");				
+			subpub.emit("gridOrient", newDir);
+			
+		});
+		
+		function setBtnOrient(newDir){
+			var nextDir = newDir == "peyote" ? "brickstitch" : "peyote";
+			$btnGridOrient.attr("data-newGridDir", nextDir);
+			$btnGridOrient.html(nextDir);
+		}
+	})();
+	
 	// Module beadGrid
 	var beadGrid = (function(){
 		var pattern = localStorage["pattern"] ? JSON.parse(localStorage["pattern"]) : '';
@@ -71,35 +128,23 @@ $(document).ready(function(){
 		
 		//cache DOM
 		var $grid = $('div.grid');
-		var $btnSave = $('button[name=save]');
-		var $btnClear = $("button[name=clear-all]");
+		
+		//bind events
+		subpub.on("gridOrient", beadDirChange);
+		subpub.on("clickBead", colorBead);
+		subpub.on("saveGrid", saveGrid);
+		subpub.on("clearGrid", clearGrid);
 		 
 		//initialisation
-		function _init(){
+		(function init(){
 			if(pattern){ // Si on a déjà qqch d'enregistré en localStorage
 				restoreGrid(pattern);
 			} else {
 				createGrid();
 			}
-					
-			bindEvt();
-		}
+		})();
 		
-		//bind events
-		function bindEvt(){
-			// Au clique sur enregistrer
-			$btnSave.click(function(){
-				beadGrid.saveGrid($(this));
-			});
-			// Bouton pour tout effacer
-			$btnClear.click(function(){
-				clearGrid();
-			});			
-			// Bouton pour orientation perle
-			$("button[name=bead-orientation]").click(function(){
-				$(this).html(beadDirChange($(this).html().toLowerCase()));
-			});
-		}
+		
 		
 		// Création d'une ligne
 		function createRow(){
@@ -124,12 +169,12 @@ $(document).ready(function(){
 			if($(".grid").find(".box.boxP").length !== 0){
 				beadDir = 'peyote';
 				$(".grid").attr("data-gridDir",'peyote');
-				$("button[name=bead-orientation]").html('brickstitch');
+				subpub.emit("gridOrient", 'peyote');
 			}
 		}
 		
 		// Enregistrer notre motif en cours
-		function _saveGrid($btn){
+		function saveGrid($btn){
 			pattern = $grid.html();
 			localStorage["pattern"] = JSON.stringify(pattern);
 			// message de confirmation
@@ -137,7 +182,7 @@ $(document).ready(function(){
 		}
 		
 		// Coloration d'une perle
-		function _colorBead(bead){
+		function colorBead(bead){
 		  actions.push(bead);
 		  if(color){
 			  //$(bead).css("background-color", color);
@@ -166,9 +211,9 @@ $(document).ready(function(){
 		
 		// Changement orientation perles
 		function beadDirChange(newDir){
-			// Sauvegarde perle direction origine pour MAJ texte bouton changement
-			var dirOri = beadDir;
-			// MAJ perle direction avec nouvelle direction
+			// Execution que si nouvelle direction différent de la direction de la grille actuelle
+			if($(".grid").attr('data-gridDir') != newDir){
+				// MAJ perle direction avec nouvelle direction
 			beadDir = newDir;
 			// MAJ des infos sur la grille
 			gridInf = beadDir == 'peyote' ? gridInfP : gridInfB;
@@ -186,21 +231,15 @@ $(document).ready(function(){
 			colorTmp = color; // Mémorisation de la couleur selectionnée dans pickColor
 			$(".box[data-color]").each(function(){
 				color = $(this).attr('data-color');
-				_colorBead($(this));
+				//colorBead($(this));
+				subpub.emit("clickBead", $(this));
 			});
 			// Restoration de la variable couleur de coloriage
 			color = colorTmp;
-			// Retourne l'orientation d'origine pour modification du texte du bouton d'orientation
-			return(dirOri);
+			}
 		}
 		
-		return {
-			init: _init,
-			saveGrid: _saveGrid,
-			colorBead: _colorBead
-		}
-		
-	})()
+	})();
 
 
     // Module colorPicker
@@ -211,17 +250,17 @@ $(document).ready(function(){
 		var $colorIcon;
 		
 		//initialisation
-		function _init(){
+		(function init(){
 			createWindow(colors);
-			bindEvt();
-		}
+		})();
+		
 		//bind events
-		function bindEvt(){
-			// Au clique sur une couleur
-			$colorIcon.click(function(){
-				colorPicker.setColor($(this));
-			});
-		}
+		// Au clique sur une couleur
+		$colorIcon.click(function(){
+			subpub.emit("colorClic", $(this));
+		});
+		subpub.on("colorClic", setColor);
+		subpub.on("colorClic", selectedColor); // On met en évidence la couleur sélectionnée
 		
 		// Création de la fenêtre colorPicker
 		function createWindow(colors){
@@ -236,9 +275,8 @@ $(document).ready(function(){
 		}
 		
 		//Définition de la couleur
-		function _setColor(colorElm){
+		function setColor(colorElm){
 			color = colorElm.attr("data-color"); // On récupère la couleur
-			selectedColor(colorElm); // On met en évidence la couleur sélectionnée
 		}
 		
 		//Mise en évidence de la couleur sélectionnée
@@ -246,16 +284,9 @@ $(document).ready(function(){
 			colorElm.addClass("selected"); // On met en évidence la couleur sélectionnée
 			colorElm.siblings().removeClass("selected");
 		}
-				
-		return {
-			init: _init,
-			setColor: _setColor
-		}
-	})();
-    
 
-	beadGrid.init();
-	colorPicker.init();
+	})();
+
 	
     $.each(colors, function(key, color){
         // Version mobile
@@ -305,11 +336,13 @@ $(document).ready(function(){
     })
     .mousemove(function() {
         if(isDown){
-         beadGrid.colorBead($(this));
+         //beadGrid.colorBead($(this));
+		 subpub.emit("clickBead", $(this));
         }
      })
      .click(function() {
-         beadGrid.colorBead($(this));
+         //beadGrid.colorBead($(this));
+		 subpub.emit("clickBead", $(this));
     })
     .mouseup(function() {
         isDown = false;
@@ -341,7 +374,7 @@ $(document).ready(function(){
     });
 
 
-    // TODO: Ajouter une popup au démarrage pour choisir l'orientation de la grille (peyote ou brickstittch)
+    // TODO: Ajouter une popup au démarrage pour choisir l'orientation de la grille (peyote ou brickstitch)
     // Orientation peyote
     // $("button[name=choose]").click(function(){
      // $("button[name=grid-peyote]").click(function(){
