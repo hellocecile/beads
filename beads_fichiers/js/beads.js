@@ -60,19 +60,14 @@ $(document).ready(function(){
 		var documentHeight = $( document ).height();
 		var documentWidth = $( document ).width();
 		// nombre de rows = deviceHeight/14+2px de bordure
-		
-		switch(beadDir){
-			case 'peyote':
-				var gridInf = {nbRow:18, nbBead:16, classBox:'boxP', classRow:'rowP', colAngle:'to bottom'};
-				break;
-			case 'bickstitch':
-			default:
-				var gridInf = {nbRow:16, nbBead:18, classBox:'', classRow:'', colAngle:'to right'};
-		 }		
+		var gridInfB = {nbRow:16, nbBead:18, classBox:'', classRow:'', colAngle:'to right'};
+		var gridInfP = {nbRow:18, nbBead:16, classBox:'boxP', classRow:'rowP', colAngle:'to bottom'};
+		var beadDir = 'brickstitch';
+		var gridInf = beadDir == 'peyote' ? gridInfP : gridInfB;	
         var nbRows = documentHeight / gridInf.nbRow;
 		var nbBeads = documentWidth / gridInf.nbBead;
-		var beadCell = '<div class="box '+gridInf.classBox+'"></div>';
-		var $beadRow = $('<div class="row '+gridInf.classRow+'"></div>');
+		var beadCell = '<div class="box "></div>';
+		var $beadRow = $('<div class="row "></div>');
 		
 		//cache DOM
 		var $grid = $('div.grid');
@@ -81,21 +76,6 @@ $(document).ready(function(){
 		 
 		//initialisation
 		function _init(){
-			// $("#beadDir").dialog({ autoOpen: false });
-			// $( "#beadDir" ).dialog( "open" );
-		// $("#bickstich").click(function(){
-				// var beadDir = "bickstich";
-				// console.log('bickstich');
-			// });
-			// Bouton pour tout effacer
-			// $("#peyote").click(function(){
-				// var beadDir = "peyote";
-				// console.log('peyote');
-			// });
-			
-			// Création de la grille			
-				// Test d'un fond strillé
-				//$grid.css("background", "repeating-linear-gradient(-55deg, #dcdcdc, #f8f8f8 2px, #f8f8ff 5px, #f8f8ff 5px)");
 			if(pattern){ // Si on a déjà qqch d'enregistré en localStorage
 				restoreGrid(pattern);
 			} else {
@@ -114,6 +94,10 @@ $(document).ready(function(){
 			// Bouton pour tout effacer
 			$btnClear.click(function(){
 				clearGrid();
+			});			
+			// Bouton pour orientation perle
+			$("button[name=bead-orientation]").click(function(){
+				$(this).html(beadDirChange($(this).html().toLowerCase()));
 			});
 		}
 		
@@ -136,6 +120,12 @@ $(document).ready(function(){
 		// Réstauration d'un schéma enregistré
 		function restoreGrid(pattern){	
 			$grid.append(pattern);
+			// MAJ du texte du bouton de direction grille si grille peyote
+			if($(".grid").find(".box.boxP").length !== 0){
+				beadDir = 'peyote';
+				$(".grid").attr("data-gridDir",'peyote');
+				$("button[name=bead-orientation]").html('brickstitch');
+			}
 		}
 		
 		// Enregistrer notre motif en cours
@@ -172,6 +162,36 @@ $(document).ready(function(){
 		// RAZ grille
 		function clearGrid(){
 			unColorBead($grid.children().children());
+		}
+		
+		// Changement orientation perles
+		function beadDirChange(newDir){
+			// Sauvegarde perle direction origine pour MAJ texte bouton changement
+			var dirOri = beadDir;
+			// MAJ perle direction avec nouvelle direction
+			beadDir = newDir;
+			// MAJ des infos sur la grille
+			gridInf = beadDir == 'peyote' ? gridInfP : gridInfB;
+			// Si nouvelle direction est peyote, ajout des class associées, sinon suppressions des class peyote
+			if(beadDir == 'peyote'){
+				$(".box").addClass(gridInfP.classBox);
+				$(".row").addClass(gridInfP.classRow);
+				$(".grid").attr('data-gridDir', 'peyote');
+			}else{
+				$(".box").removeClass(gridInfP.classBox);
+				$(".row").removeClass(gridInfP.classRow);				
+				$(".grid").removeAttr('data-gridDir');
+			}
+			// MAJ orientation couleur perles
+			colorTmp = color; // Mémorisation de la couleur selectionnée dans pickColor
+			$(".box[data-color]").each(function(){
+				color = $(this).attr('data-color');
+				_colorBead($(this));
+			});
+			// Restoration de la variable couleur de coloriage
+			color = colorTmp;
+			// Retourne l'orientation d'origine pour modification du texte du bouton d'orientation
+			return(dirOri);
 		}
 		
 		return {
@@ -321,25 +341,25 @@ $(document).ready(function(){
     });
 
 
-    // TODO: Ajouter une popup au démarrage pour choisir l'orientation de la grille (peyote ou bickstitch)
+    // TODO: Ajouter une popup au démarrage pour choisir l'orientation de la grille (peyote ou brickstittch)
     // Orientation peyote
     // $("button[name=choose]").click(function(){
-     $("button[name=grid-peyote]").click(function(){
+     // $("button[name=grid-peyote]").click(function(){
 
-         $("div.row").remove();
+         // $("div.row").remove();
 
-        //alert(documentWidth + " " + documentHeight);
-        var nbRowsP = documentHeight / 18;
-        var gridP = $('div.grid');
-        for(var i=1; i<=nbRowsP; i++){
-            gridP.append('<div class="rowP"></div>');
-        }
+        // // alert(documentWidth + " " + documentHeight);
+        // var nbRowsP = documentHeight / 18;
+        // var gridP = $('div.grid');
+        // for(var i=1; i<=nbRowsP; i++){
+            // gridP.append('<div class="rowP"></div>');
+        // }
 
-        var nbBeadsP = documentWidth / 16;
-        var rowP = $('div.rowP');
-        for(var j=1; j< (nbBeadsP-2); j++){
-            rowP.append('<div class="boxP"></div>');
-        }
-    });
+        // var nbBeadsP = documentWidth / 16;
+        // var rowP = $('div.rowP');
+        // for(var j=1; j< (nbBeadsP-2); j++){
+            // rowP.append('<div class="boxP"></div>');
+        // }
+    // });
 
 });
