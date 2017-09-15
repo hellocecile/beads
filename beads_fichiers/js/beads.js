@@ -351,12 +351,6 @@ $(document).ready(function(){
     $(".grid").mouseleave(function(){
         isDown = false;
     });
-
-    
-
-
-    // TODO: ajouter bouton gomme (removeClass...)
-
     
 
     // TODO: Ajouter un bouton pour revenir en arrière
