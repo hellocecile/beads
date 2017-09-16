@@ -6,7 +6,6 @@ $(document).ready(function(){
     //   event.preventDefault();
     // }, false);
 
-    var actions = [];
     var color;
     // Tableau de couleurs
     var colors = {
@@ -98,9 +97,10 @@ $(document).ready(function(){
 		});			
 		// Bouton pour orientation perle
 		$btnGridOrient.click(function(){
-			var newDir = $btnGridOrient.attr("data-newGridDir");				
+			var newDir = $btnGridOrient.attr("data-newGridDir");
+			var prevDir = newDir == 'peyote' ? 'brickstitch' : 'peyote';				
 			subpub.emit("gridOrient", newDir);
-			
+			subpub.emit("toUndoList", {action:'gridOrient', params: {prevDir: prevDir, dir: newDir} });			
 		});
 		
 		function setBtnOrient(newDir){
@@ -183,7 +183,6 @@ $(document).ready(function(){
 		
 		// Coloration d'une perle
 		function colorBead(bead){
-		  actions.push(bead);
 		  if(color){
 			  //$(bead).css("background-color", color);
 			  $(bead).css("background", "-moz-linear-gradient("+gridInf.colAngle+", "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
@@ -193,15 +192,11 @@ $(document).ready(function(){
 		  }else{
 			  unColorBead($(bead));
 		  }
-
-		  localStorage["actions"] = JSON.stringify(actions);
 		}
 		
 		// Décoloration d'une perle
 		function unColorBead(bead){
-		  actions.push(bead);
 		  $(bead).removeAttr('style data-color');
-		  localStorage["actions"] = JSON.stringify(actions);
 		}
 		
 		// RAZ grille
@@ -239,6 +234,56 @@ $(document).ready(function(){
 			}
 		}
 		
+		//Gestion des événements sourie/touch
+		var isDown = false;
+		var bead;
+		
+		if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) { 
+			// Version mobile
+			$(".box")
+			.on("vmousedown", function(){
+				touchClickBead();
+			})
+			.on("vmousemove", function(){
+				touchClickBead();
+			});
+			function touchClickBead(){
+				//Récupère l'élement ou se trouve le doigt
+				var target = document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY);
+				//Si l'élément est une perle, execution du coloriage
+				if($(target).hasClass("box")) clickBead(target);
+			}		
+		}else{
+			// Version desktop
+			$(".box")
+			.mousedown(function() {	
+				isDown = true;
+				clickBead();
+			})
+			.mousemove(function() {
+				if(isDown && event.target != bead){
+					clickBead();
+				}
+			 })
+			.mouseup(function() {	
+				isDown = false;
+			});
+
+			$(".grid").mouseleave(function(){
+				isDown = false;
+			});
+		}
+		
+		
+		function clickBead(target){
+			bead = target ? target : event.target;		
+			var prevColor = $(bead).attr("data-color") || '';
+			if(prevColor != color){
+				subpub.emit("clickBead", bead);
+				subpub.emit("toUndoList", {action:'beadColor', params: {bead: bead , prevColor: prevColor, color: color} });				
+			}
+		}
+		
 	})();
 
 
@@ -257,9 +302,11 @@ $(document).ready(function(){
 		//bind events
 		// Au clique sur une couleur
 		$colorIcon.click(function(){
-			$clickArea = $(this);
+			var $clickArea = $(this);
+			var prevColor = color ? color : '';
 			color = $clickArea.attr("data-color"); // On récupère la couleur
 			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
+			subpub.emit("toUndoList", {action:'changeColor', params: {prevColor: prevColor, color: color} });
 		});
 		subpub.on("colorClic", setColor);
 		subpub.on("colorClic", selectedColor); // On met en évidence la couleur sélectionnée
@@ -278,9 +325,7 @@ $(document).ready(function(){
 		
 		//Définition de la couleur
 		function setColor(data){
-			var prevColor = color ? color : '';
 			color = data.color;
-			subpub.emit("toUndoList", {action:'setColor', params: {prevColor: prevColor, color: color} });
 		}
 		
 		//Mise en évidence de la couleur sélectionnée
@@ -301,74 +346,9 @@ $(document).ready(function(){
 			var undoList = localStorage["undoList"] ? JSON.parse(localStorage["undoList"]) : [];
 			undoList.push(data);
 			localStorage["undoList"] = JSON.stringify(undoList);
-			console.log(localStorage["undoList"]);
 		}
 	})();
 		
-    $.each(colors, function(key, color){
-        // Version mobile
-        // TODO: event touch
-        // $('.box').on({
-        //     'touchstart' : function(){
-        //         // instructions
-        //         isDown = true;
-        //     },
-        //     'touchmove' : function(){
-        //         if(isDown){
-        //             $(this).css("background-color", color);
-        //         }
-        //     },
-        //     'touchend' : function(){
-        //         isDown = false;
-        //     }
-        //  });
-
-        // test mobile 2
-        // $(".box").on("touchstart tap", function() {
-        //     isDown = true;
-        // });
-        //
-        // $(".box").on("swipe", function() {
-        //     $.event.special.swipe.horizontalDistanceThreshold = 10;
-        //     //if(isDown){
-        //         $(this).css("background-color", color);
-        //     //}
-        // });
-        //
-        // $(".box").on("touchend", function() {
-        //     isDown = false;
-        // });
-
-    });
-
-
-    
-
-    var isDown = false;
-
-    // Version desktop
-    $(".box")
-    .mousedown(function() {
-        isDown = true;
-    })
-    .mousemove(function() {
-        if(isDown){
-         //beadGrid.colorBead($(this));
-		 subpub.emit("clickBead", $(this));
-        }
-     })
-     .click(function() {
-         //beadGrid.colorBead($(this));
-		 subpub.emit("clickBead", $(this));
-    })
-    .mouseup(function() {
-        isDown = false;
-    });
-
-    $(".grid").mouseleave(function(){
-        isDown = false;
-    });
-    
 
     // TODO: Ajouter un bouton pour revenir en arrière
     $("button[name=undo]").click(function(){
@@ -376,8 +356,7 @@ $(document).ready(function(){
     });
 
     // TODO: Ajouter le "pot de peinture"
-
-    
+   
 
     // TODO: Faire capture d'écran / exporter
     $("button[name=export]").click(function(){
@@ -386,24 +365,6 @@ $(document).ready(function(){
 
 
     // TODO: Ajouter une popup au démarrage pour choisir l'orientation de la grille (peyote ou brickstitch)
-    // Orientation peyote
-    // $("button[name=choose]").click(function(){
-     // $("button[name=grid-peyote]").click(function(){
-
-         // $("div.row").remove();
-
-        // // alert(documentWidth + " " + documentHeight);
-        // var nbRowsP = documentHeight / 18;
-        // var gridP = $('div.grid');
-        // for(var i=1; i<=nbRowsP; i++){
-            // gridP.append('<div class="rowP"></div>');
-        // }
-
-        // var nbBeadsP = documentWidth / 16;
-        // var rowP = $('div.rowP');
-        // for(var j=1; j< (nbBeadsP-2); j++){
-            // rowP.append('<div class="boxP"></div>');
-        // }
-    // });
 
 });
+
