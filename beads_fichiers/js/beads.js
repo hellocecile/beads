@@ -280,6 +280,7 @@ $(document).ready(function(){
 		function setColor(data){
 			var prevColor = color ? color : '';
 			color = data.color;
+			subpub.emit("toUndoList", {action:'setColor', params: {prevColor: prevColor, color: color} });
 		}
 		
 		//Mise en évidence de la couleur sélectionnée
@@ -288,6 +289,20 @@ $(document).ready(function(){
 			$(data.clickArea).siblings().removeClass("selected");
 		}
 
+	})();
+
+	// Module logger
+	var logger = (function(){
+		//bind events
+		subpub.on("toUndoList", undoList);
+		
+		//Mise en liste undo
+		function undoList(data){
+			var undoList = localStorage["undoList"] ? JSON.parse(localStorage["undoList"]) : [];
+			undoList.push(data);
+			localStorage["undoList"] = JSON.stringify(undoList);
+			console.log(localStorage["undoList"]);
+		}
 	})();
 		
     $.each(colors, function(key, color){
