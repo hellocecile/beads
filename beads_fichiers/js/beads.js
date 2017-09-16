@@ -257,7 +257,9 @@ $(document).ready(function(){
 		//bind events
 		// Au clique sur une couleur
 		$colorIcon.click(function(){
-			subpub.emit("colorClic", $(this));
+			$clickArea = $(this);
+			color = $clickArea.attr("data-color"); // On récupère la couleur
+			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
 		});
 		subpub.on("colorClic", setColor);
 		subpub.on("colorClic", selectedColor); // On met en évidence la couleur sélectionnée
@@ -275,19 +277,19 @@ $(document).ready(function(){
 		}
 		
 		//Définition de la couleur
-		function setColor(colorElm){
-			color = colorElm.attr("data-color"); // On récupère la couleur
+		function setColor(data){
+			var prevColor = color ? color : '';
+			color = data.color;
 		}
 		
 		//Mise en évidence de la couleur sélectionnée
-		function selectedColor(colorElm){
-			colorElm.addClass("selected"); // On met en évidence la couleur sélectionnée
-			colorElm.siblings().removeClass("selected");
+		function selectedColor(data){
+			$(data.clickArea).addClass("selected"); // On met en évidence la couleur sélectionnée
+			$(data.clickArea).siblings().removeClass("selected");
 		}
 
 	})();
-
-	
+		
     $.each(colors, function(key, color){
         // Version mobile
         // TODO: event touch
