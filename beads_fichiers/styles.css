@@ -45,7 +45,7 @@ html, body{
     position: relative;
 }
 .rowP:nth-child(2n) {
-    left: 8px;
+    left: 0px;
     position: relative;
 }
 
@@ -64,6 +64,10 @@ html, body{
   display: inline-block;
   margin: 0;
   border-radius: 2px;
+}
+.boxP:nth-child(2n) {
+    top: 8px;
+    position: relative;
 }
 
 .pick-color {
