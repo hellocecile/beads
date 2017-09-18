@@ -333,13 +333,11 @@ $(document).ready(function(){
 		//bind events
 		// Au clique sur une couleur
 		$colorIcon.click(function(){
-			//var $clickArea = $(this);
-			var clickArea = event.target;
-			// console.log(clickArea);
+			var $clickArea = $(this);
 			var prevColor = color ? color : '';
-			color = $(clickArea).attr("data-color"); // On récupère la couleur
-			subpub.emit("colorClic", {clickArea: clickArea, color:color});
-			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $(clickArea), color: prevColor, NewColor: color} });
+			color = $clickArea.attr("data-color"); // On récupère la couleur
+			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
+			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $clickArea, color: prevColor, NewColor: color} });
 		});
 		subpub.on("colorClic", colorClic); // On met en évidence la couleur sélectionnée et config couleur
 		
