@@ -72,7 +72,15 @@ $(document).ready(function(){
 	  emit: function (eventName, data) {
 		if (this.events[eventName]) {
 		  this.events[eventName].forEach(function(fn) {
-			fn(data);
+			var args = [];
+			if($.type(data) === 'object'){
+				args = $.map(data, function(value, index) {
+					return [value];
+				});
+			}else{
+				args.push(data);
+			}
+			fn.apply(this, args);
 		  });
 		}
 	  }
@@ -83,9 +91,11 @@ $(document).ready(function(){
 		//cache DOM
 		var $btnSave = $('button[name=save]');
 		var $btnClear = $("button[name=clear-all]");
+		var $btnUndo = $("button[name=undo]");
 		var $btnGridOrient = $("button[name=bead-orientation]");
 		
-		//bind events
+		//bind events		
+		subpub.on("undoAction", undoAction);
 		subpub.on("gridOrient", setBtnOrient);
 		// Au clique sur enregistrer
 		$btnSave.click(function(){
@@ -94,11 +104,15 @@ $(document).ready(function(){
 		// Bouton pour tout effacer
 		$btnClear.click(function(){	
 			subpub.emit("clearGrid", );
-		});			
+		});		
+		// Bouton undo
+		$btnUndo.click(function(){
+			subpub.emit("undoAction", );
+		});		
 		// Bouton pour orientation perle
 		$btnGridOrient.click(function(){
 			var newDir = $btnGridOrient.attr("data-newGridDir");
-			var prevDir = newDir == 'peyote' ? 'brickstitch' : 'peyote';				
+			var prevDir = newDir == 'peyote' ? 'brickstitch' : 'peyote';
 			subpub.emit("gridOrient", newDir);
 			subpub.emit("toUndoList", {action:'gridOrient', params: {prevDir: prevDir, dir: newDir} });			
 		});
@@ -108,6 +122,22 @@ $(document).ready(function(){
 			$btnGridOrient.attr("data-newGridDir", nextDir);
 			$btnGridOrient.html(nextDir);
 		}
+		
+		// Fonction retour arrière (undo)
+		function undoAction(){
+			var undoList = localStorage["undoList"] ? JSON.parse(localStorage["undoList"]) : [];
+			var lastAction = ($(undoList).get(-1));
+			console.log(lastAction.action);
+			console.log(lastAction.action, $.type(lastAction.action));
+			console.log(lastAction.params);
+			subpub.emit(lastAction.action, lastAction.params);
+			//subpub.emit("colorClic", "#000");
+			console.log(color);
+			undoList.pop();
+			//console.log(undoList);
+			localStorage["undoList"] = JSON.stringify(undoList);
+		}
+		
 	})();
 	
 	// Module beadGrid
@@ -132,6 +162,7 @@ $(document).ready(function(){
 		//bind events
 		subpub.on("gridOrient", beadDirChange);
 		subpub.on("clickBead", colorBead);
+		subpub.on("colorBead", colorBead);
 		subpub.on("saveGrid", saveGrid);
 		subpub.on("clearGrid", clearGrid);
 		 
@@ -169,7 +200,7 @@ $(document).ready(function(){
 			if($(".grid").find(".box.boxP").length !== 0){
 				beadDir = 'peyote';
 				$(".grid").attr("data-gridDir",'peyote');
-				subpub.emit("gridOrient", 'peyote');
+				subpub.emit("gridOrient", {orient: 'peyote'});
 			}
 		}
 		
@@ -182,13 +213,14 @@ $(document).ready(function(){
 		}
 		
 		// Coloration d'une perle
-		function colorBead(bead){
-		  if(color){
+		function colorBead(bead, colorB = color){
+			 // console.log('color', bead, colorB);
+		  if(colorB){
 			  //$(bead).css("background-color", color);
-			  $(bead).css("background", "-moz-linear-gradient("+gridInf.colAngle+", "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
-			  $(bead).css("background", "-webkit-linear-gradient("+gridInf.colAngle+", "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
-			  $(bead).css("background", "linear-gradient("+gridInf.colAngle+", "+ color +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ color +" 99%), "+ color +"");
-			  $(bead).attr('data-color', color);
+			  $(bead).css("background", "-moz-linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
+			  $(bead).css("background", "-webkit-linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
+			  $(bead).css("background", "linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
+			  $(bead).attr('data-color', colorB);
 		  }else{
 			  unColorBead($(bead));
 		  }
@@ -236,7 +268,7 @@ $(document).ready(function(){
 		
 		//Gestion des événements sourie/touch
 		var isDown = false;
-		var bead;
+		var $bead;
 		
 		if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) { 
 			// Version mobile
@@ -249,20 +281,20 @@ $(document).ready(function(){
 			});
 			function touchClickBead(){
 				//Récupère l'élement ou se trouve le doigt
-				var target = document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY);
+				var $target = $(document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY));
 				//Si l'élément est une perle, execution du coloriage
-				if($(target).hasClass("box")) clickBead(target);
+				if($target.hasClass("box")) clickBead($target);
 			}		
 		}else{
 			// Version desktop
 			$(".box")
 			.mousedown(function() {	
 				isDown = true;
-				clickBead();
+				clickBead($(this));
 			})
 			.mousemove(function() {
-				if(isDown && event.target != bead){
-					clickBead();
+				if(isDown && event.target != $bead){
+					clickBead($(this));
 				}
 			 })
 			.mouseup(function() {	
@@ -272,15 +304,14 @@ $(document).ready(function(){
 			$(".grid").mouseleave(function(){
 				isDown = false;
 			});
-		}
-		
+		}		
 		
 		function clickBead(target){
-			bead = target ? target : event.target;		
-			var prevColor = $(bead).attr("data-color") || '';
+			$bead = target ? target : event.target;		
+			var prevColor = $bead.attr("data-color") || '';
 			if(prevColor != color){
-				subpub.emit("clickBead", bead);
-				subpub.emit("toUndoList", {action:'beadColor', params: {bead: bead , prevColor: prevColor, color: color} });				
+				subpub.emit("clickBead", $bead);
+				subpub.emit("toUndoList", {action:'colorBead', params:{$bead , prevColor, color} });				
 			}
 		}
 		
@@ -302,14 +333,15 @@ $(document).ready(function(){
 		//bind events
 		// Au clique sur une couleur
 		$colorIcon.click(function(){
-			var $clickArea = $(this);
+			//var $clickArea = $(this);
+			var clickArea = event.target;
+			// console.log(clickArea);
 			var prevColor = color ? color : '';
-			color = $clickArea.attr("data-color"); // On récupère la couleur
-			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
-			subpub.emit("toUndoList", {action:'changeColor', params: {prevColor: prevColor, color: color} });
+			color = $(clickArea).attr("data-color"); // On récupère la couleur
+			subpub.emit("colorClic", {clickArea: clickArea, color:color});
+			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $(clickArea), color: prevColor, NewColor: color} });
 		});
-		subpub.on("colorClic", setColor);
-		subpub.on("colorClic", selectedColor); // On met en évidence la couleur sélectionnée
+		subpub.on("colorClic", colorClic); // On met en évidence la couleur sélectionnée et config couleur
 		
 		// Création de la fenêtre colorPicker
 		function createWindow(colors){
@@ -323,15 +355,21 @@ $(document).ready(function(){
 			$colorIcon = $pickColor.find(".pick");		
 		}
 		
+		//Actions au clic sur une couleur
+		function colorClic(clickArea, newColor){
+			setColor(newColor);
+			selectedColor(clickArea);
+		}
+		
 		//Définition de la couleur
-		function setColor(data){
-			color = data.color;
+		function setColor(newColor){
+			color = newColor;
 		}
 		
 		//Mise en évidence de la couleur sélectionnée
-		function selectedColor(data){
-			$(data.clickArea).addClass("selected"); // On met en évidence la couleur sélectionnée
-			$(data.clickArea).siblings().removeClass("selected");
+		function selectedColor(clickArea){
+			$(clickArea).addClass("selected"); // On met en évidence la couleur sélectionnée
+			$(clickArea).siblings().removeClass("selected");
 		}
 
 	})();
