@@ -46,7 +46,7 @@ html, body{
 }
 .rowP:nth-child(2n) {
     left: 0px;
-    position: relative;
+    position: initial;
 }
 
 .box {
