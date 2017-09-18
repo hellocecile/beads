@@ -73,7 +73,8 @@ $(document).ready(function(){
 		if (this.events[eventName]) {
 		  this.events[eventName].forEach(function(fn) {
 			var args = [];
-			if($.type(data) === 'object'){
+			//Si data est un objet et pas un élément DOM, transformation en tableau
+			if($.type(data) === 'object' && !data.nodeType){
 				args = $.map(data, function(value, index) {
 					return [value];
 				});
@@ -99,7 +100,7 @@ $(document).ready(function(){
 		subpub.on("gridOrient", setBtnOrient);
 		// Au clique sur enregistrer
 		$btnSave.click(function(){
-			subpub.emit("saveGrid", $(this));
+			subpub.emit("saveGrid", this);
 		});
 		// Bouton pour tout effacer
 		$btnClear.click(function(){	
@@ -209,7 +210,7 @@ $(document).ready(function(){
 			pattern = $grid.html();
 			localStorage["pattern"] = JSON.stringify(pattern);
 			// message de confirmation
-			$btn.notify("Enregistré", { elementPosition:"right middle", className: "success" });
+			$($btn).notify("Enregistré", { elementPosition:"right middle", className: "success" });
 		}
 		
 		// Coloration d'une perle
