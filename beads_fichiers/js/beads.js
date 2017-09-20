@@ -104,11 +104,11 @@ $(document).ready(function(){
 		});
 		// Bouton pour tout effacer
 		$btnClear.click(function(){	
-			subpub.emit("clearGrid", );
+			subpub.emit("clearGrid");
 		});		
 		// Bouton undo
 		$btnUndo.click(function(){
-			subpub.emit("undoAction", );
+			subpub.emit("undoAction");
 		});		
 		// Bouton pour orientation perle
 		$btnGridOrient.click(function(){
