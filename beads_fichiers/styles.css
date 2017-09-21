@@ -77,6 +77,11 @@ html, body{
     border-radius: 20px;
     margin: 0.50vw;
     border: 1px solid #DDD;
+	text-align: center;
+}
+.pick i.fa{
+	position: relative;
+    top: -2px;
 }
 
 .selected {

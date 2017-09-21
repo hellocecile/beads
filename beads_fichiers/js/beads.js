@@ -431,6 +431,7 @@ $(document).ready(function(){
 			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $clickArea, color: prevColor, NewColor: color} });
 		});
 		subpub.on("colorClic", colorClic); // On met en évidence la couleur sélectionnée et config couleur
+		subpub.on("colorCount", colorNumber);
 		
 		// Création de la fenêtre colorPicker
 		function createWindow(colors){
@@ -441,7 +442,17 @@ $(document).ready(function(){
 				$pickColor.append(html);
 			});
 			
-			$colorIcon = $pickColor.find(".pick");		
+			$colorIcon = $pickColor.find(".pick");
+		}
+		
+		// Affichage du nombre par couleur
+		function colorNumber(color, value){
+			console.log(color, value);
+			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('i');
+			var nb = parseInt($colorCircle.html()) || 0;
+			nb += value;
+			nb <= 0 ? $colorCircle.text('') : $colorCircle.text(nb);
+			//console.log($colorIcon.filter("[data-color='"+color+"']").find('i'));
 		}
 		
 		//Actions au clic sur une couleur
