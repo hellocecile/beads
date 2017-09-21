@@ -55,15 +55,11 @@ html, body{
   width: 16px;
   display: inline-block;
   margin: 0;
-  /*border-radius: 2px;*/
+  border-radius: 2px;
 }
 .boxP {
-  border: 1px solid #CCC;
   height: 16px;
   width: 14px;
-  display: inline-block;
-  margin: 0;
-  border-radius: 2px;
 }
 .boxP:nth-child(2n) {
     top: 8px;
