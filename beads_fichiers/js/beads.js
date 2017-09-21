@@ -247,9 +247,10 @@ $(document).ready(function(){
 		  if(colorB){
 			  if($(bead).attr('data-color')) subpub.emit("colorCount", {color:$(bead).attr('data-color'), value:-1});
 			  //$(bead).css("background-color", color);
-			  $(bead).css("background", "-moz-linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
-			  $(bead).css("background", "-webkit-linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
-			  $(bead).css("background", "linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
+			  var browserPrefix = ["-moz-", "-webkit-", ""];
+			  $.each(browserPrefix, function(key, prefix){
+				  $(bead).css("background", prefix+"linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
+			  });
 			  $(bead).attr('data-color', colorB);
 			  subpub.emit("colorCount", {color:colorB, value:1});
 		  }else{
