@@ -87,6 +87,72 @@ $(document).ready(function(){
 	  }
 	};
 	
+	
+    // Module colorPicker
+	var colorPicker = (function(){
+		
+		//cache DOM
+		var $pickColor = $(".pick-color");
+		var $colorIcon;
+		
+		//initialisation
+		(function init(){
+			createWindow(colors);
+		})();
+		
+		//bind events
+		// Au clique sur une couleur
+		$colorIcon.click(function(){
+			var $clickArea = $(this);
+			var prevColor = color ? color : '';
+			color = $clickArea.attr("data-color"); // On récupère la couleur
+			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
+			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $clickArea, color: prevColor, NewColor: color} });
+		});
+		subpub.on("colorClic", colorClic); // On met en évidence la couleur sélectionnée et config couleur
+		subpub.on("colorCount", colorNumber);
+		
+		// Création de la fenêtre colorPicker
+		function createWindow(colors){
+			$.each(colors, function(key, color){
+				var html = '<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa ';
+				html += (key == "eraser") ? 'fa-eraser' : ''; // mise en forme bouton gomme
+				html += '" aria-hidden="true"></i></div>';
+				$pickColor.append(html);
+			});
+			
+			$colorIcon = $pickColor.find(".pick");
+		}
+		
+		// Affichage du nombre par couleur
+		function colorNumber(color, value){
+			console.log(color, value);
+			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('i');
+			var nb = parseInt($colorCircle.html()) || 0;
+			nb += value;
+			nb <= 0 ? $colorCircle.text('') : $colorCircle.text(nb);
+		}
+		
+		//Actions au clic sur une couleur
+		function colorClic(clickArea, newColor){
+			setColor(newColor);
+			selectedColor(clickArea);
+		}
+		
+		//Définition de la couleur
+		function setColor(newColor){
+			color = newColor;
+		}
+		
+		//Mise en évidence de la couleur sélectionnée
+		function selectedColor(clickArea){
+			$(clickArea).addClass("selected"); // On met en évidence la couleur sélectionnée
+			$(clickArea).siblings().removeClass("selected");
+		}
+
+	})();
+
+	
 	// Module beadTools
 	var beadTools = (function(){
 		
@@ -408,71 +474,6 @@ $(document).ready(function(){
 		
 	})();
 
-
-    // Module colorPicker
-	var colorPicker = (function(){
-		
-		//cache DOM
-		var $pickColor = $(".pick-color");
-		var $colorIcon;
-		
-		//initialisation
-		(function init(){
-			createWindow(colors);
-		})();
-		
-		//bind events
-		// Au clique sur une couleur
-		$colorIcon.click(function(){
-			var $clickArea = $(this);
-			var prevColor = color ? color : '';
-			color = $clickArea.attr("data-color"); // On récupère la couleur
-			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
-			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $clickArea, color: prevColor, NewColor: color} });
-		});
-		subpub.on("colorClic", colorClic); // On met en évidence la couleur sélectionnée et config couleur
-		subpub.on("colorCount", colorNumber);
-		
-		// Création de la fenêtre colorPicker
-		function createWindow(colors){
-			$.each(colors, function(key, color){
-				var html = '<div class="pick" style="background-color:'+ color +'" data-color="'+ color +'"><i class="fa ';
-				html += (key == "eraser") ? 'fa-eraser' : ''; // mise en forme bouton gomme
-				html += '" aria-hidden="true"></i></div>';
-				$pickColor.append(html);
-			});
-			
-			$colorIcon = $pickColor.find(".pick");
-		}
-		
-		// Affichage du nombre par couleur
-		function colorNumber(color, value){
-			console.log(color, value);
-			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('i');
-			var nb = parseInt($colorCircle.html()) || 0;
-			nb += value;
-			nb <= 0 ? $colorCircle.text('') : $colorCircle.text(nb);
-			//console.log($colorIcon.filter("[data-color='"+color+"']").find('i'));
-		}
-		
-		//Actions au clic sur une couleur
-		function colorClic(clickArea, newColor){
-			setColor(newColor);
-			selectedColor(clickArea);
-		}
-		
-		//Définition de la couleur
-		function setColor(newColor){
-			color = newColor;
-		}
-		
-		//Mise en évidence de la couleur sélectionnée
-		function selectedColor(clickArea){
-			$(clickArea).addClass("selected"); // On met en évidence la couleur sélectionnée
-			$(clickArea).siblings().removeClass("selected");
-		}
-
-	})();
 
 	// Module logger
 	var logger = (function(){
