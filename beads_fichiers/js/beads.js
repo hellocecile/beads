@@ -197,6 +197,7 @@ $(document).ready(function(){
 		(function init(){
 			if(pattern){ // Si on a déjà qqch d'enregistré en localStorage
 				restoreGrid(pattern);
+				colorCountUpdate();
 			} else {
 				gridDetails();
 				createGrid();
@@ -204,6 +205,12 @@ $(document).ready(function(){
 			gridEventsBinds();
 		})();
 		
+		function colorCountUpdate(){
+			var col = $(".grid .box[data-color]");
+			$.each(col, function(key, bead){
+				subpub.emit("colorCount", {color:$(bead).attr('data-color'), value:1});
+			});
+		}
 		
 		
 		// Création d'une ligne
