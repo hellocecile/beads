@@ -74,7 +74,7 @@ $(document).ready(function(){
 		  this.events[eventName].forEach(function(fn) {
 			var args = [];
 			//Si data est un objet et pas un élément DOM, transformation en tableau
-			if($.type(data) === 'object' && !data.nodeType){
+			if($.type(data) === 'object' && !data.nodeType && (!data.action || !data.params)){
 				args = $.map(data, function(value, index) {
 					return [value];
 				});
@@ -104,11 +104,11 @@ $(document).ready(function(){
 		});
 		// Bouton pour tout effacer
 		$btnClear.click(function(){	
-			subpub.emit("clearGrid", );
+			subpub.emit("clearGrid");
 		});		
 		// Bouton undo
 		$btnUndo.click(function(){
-			subpub.emit("undoAction", );
+			subpub.emit("undoAction");
 		});		
 		// Bouton pour orientation perle
 		$btnGridOrient.click(function(){
@@ -128,6 +128,7 @@ $(document).ready(function(){
 		function undoAction(){
 			var undoList = localStorage["undoList"] ? JSON.parse(localStorage["undoList"]) : [];
 			var lastAction = ($(undoList).get(-1));
+			console.log(lastAction);
 			console.log(lastAction.action);
 			console.log(lastAction.action, $.type(lastAction.action));
 			console.log(lastAction.params);
@@ -145,15 +146,17 @@ $(document).ready(function(){
 	var beadGrid = (function(){
 		var pattern = localStorage["pattern"] ? JSON.parse(localStorage["pattern"]) : '';
 		// Détecter les tailles de device pour voir combien de cellules on met
-		var documentHeight = $( document ).height();
-		var documentWidth = $( document ).width();
+		var documentHeight;
+		var documentWidth;
+		var windowHeight;
+		var windowWidth;
 		// nombre de rows = deviceHeight/14+2px de bordure
 		var gridInfB = {nbRow:16, nbBead:18, classBox:'', classRow:'', colAngle:'to right'};
 		var gridInfP = {nbRow:18, nbBead:16, classBox:'boxP', classRow:'rowP', colAngle:'to bottom'};
 		var beadDir = 'brickstitch';
 		var gridInf = beadDir == 'peyote' ? gridInfP : gridInfB;	
-        var nbRows = documentHeight / gridInf.nbRow;
-		var nbBeads = documentWidth / gridInf.nbBead;
+        var nbRows;
+		var nbBeads;
 		var beadCell = '<div class="box "></div>';
 		var $beadRow = $('<div class="row "></div>');
 		
@@ -167,13 +170,26 @@ $(document).ready(function(){
 		subpub.on("saveGrid", saveGrid);
 		subpub.on("clearGrid", clearGrid);
 		 
+		// Détails de grille
+		function gridDetails(){
+			// Détecter les tailles de device pour voir combien de cellules on met
+			// documentHeight = $( document ).height() - 50;
+			windowHeight = $( window ).height() - 50;
+			// documentWidth = $( document ).width();
+			windowWidth = $( window ).width();
+			nbRows = 2*Math.floor((windowHeight / gridInf.nbRow)/2);
+			nbBeads = 2*Math.floor((windowWidth / gridInf.nbBead)/2);
+		}
+		
 		//initialisation
 		(function init(){
 			if(pattern){ // Si on a déjà qqch d'enregistré en localStorage
 				restoreGrid(pattern);
 			} else {
+				gridDetails();
 				createGrid();
 			}
+			gridEventsBinds();
 		})();
 		
 		
@@ -190,7 +206,7 @@ $(document).ready(function(){
 		function createGrid(){
 			createRow();
 			for(var i=1; i<=nbRows; i++){
-				$grid.append($beadRow.clone());				
+				$grid.append($beadRow.clone());
 			}
 		}
 		
@@ -255,6 +271,8 @@ $(document).ready(function(){
 				$(".row").removeClass(gridInfP.classRow);				
 				$(".grid").removeAttr('data-gridDir');
 			}
+			gridUpdate();
+			
 			// MAJ orientation couleur perles
 			colorTmp = color; // Mémorisation de la couleur selectionnée dans pickColor
 			$(".box[data-color]").each(function(){
@@ -267,45 +285,93 @@ $(document).ready(function(){
 			}
 		}
 		
-		//Gestion des événements sourie/touch
-		var isDown = false;
-		var $bead;
-		
-		if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) { 
-			// Version mobile
-			$(".box")
-			.on("vmousedown", function(){
-				touchClickBead();
-			})
-			.on("vmousemove", function(){
-				touchClickBead();
-			});
-			function touchClickBead(){
-				//Récupère l'élement ou se trouve le doigt
-				var $target = $(document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY));
-				//Si l'élément est une perle, execution du coloriage
-				if($target.hasClass("box")) clickBead($target);
-			}		
-		}else{
-			// Version desktop
-			$(".box")
-			.mousedown(function() {	
-				isDown = true;
-				clickBead($(this));
-			})
-			.mousemove(function() {
-				if(isDown && event.target != $bead){
-					clickBead($(this));
+		function gridUpdate(beadDir){
+			gridDetails();
+			
+			var $rows = $(".row");
+			var $beads = $(".box");
+			// Si nombre de lignes actuel est suppérieur à nouveau nb lignes, retire les dernière x lignes
+			if($rows.length > nbRows){
+				var nbRowsToRemove = $rows.length - nbRows;
+					//retire lignes en fin
+					$rows.slice(-nbRowsToRemove / 2).remove();
+					//retire lignes en début
+					$rows.slice(0, nbRowsToRemove / 2).remove();
+			}			
+			// Si nombre de lignes actuel est inférieur à nouveau nb lignes, ajout de x lignes
+			if($rows.length < nbRows){
+				var nbRowsToAdd =  nbRows - $rows.length;
+				var $row = $rows.last();
+				$row.find('.box').removeAttr('style data-color');
+				for(var i = 0; i < nbRowsToAdd / 2; i++){
+					$row.clone().appendTo('.grid');
+					$row.clone().prependTo('.grid');
 				}
-			 })
-			.mouseup(function() {	
-				isDown = false;
-			});
+			}
+			
+			var nbBoxPerRow = $beads.length / $rows.length;
+			// Si nombre de perles actuel est inférieur à nouveau nb perles, ajout de x perles
+			if(nbBoxPerRow < nbBeads - 2){
+				var nbBoxToAdd = nbBeads - 2 - nbBoxPerRow;
+				for(var j=0; j < (nbBoxToAdd / 2); j++){
+					$('.row .box:last').clone().removeAttr('style data-color').insertAfter($('.row').find('.box:last'));
+					$('.row .box:first').clone().removeAttr('style data-color').insertBefore($('.row').find('.box:first'));
+				}
+			}
+			// Si nombre de perles actuel est suppérieur à nouveau nb perles, suppression de x perles
+			if(nbBoxPerRow > nbBeads - 2){
+				var nbBoxToRemove = nbBoxPerRow - (nbBeads - 2);
+				for(var k=0; k < nbBoxToRemove / 2; k++){
+					$('.row').find('.box:last').remove();
+					$('.row').find('.box:first').remove();				
+				}
+			}		
+			
+			gridEventsBinds();
+		}
+		
+		//Gestion des événements sourie/touch
+		function gridEventsBinds(){
+			var isDown = false;
+			var $bead;
+			
+			if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) { 
+				// Version mobile
+				$(".box")
+				.on("vmousedown", function(){
+					touchClickBead();
+				})
+				.on("vmousemove", function(){
+					touchClickBead();
+				});
+				function touchClickBead(){
+					//Récupère l'élement ou se trouve le doigt
+					var $target = $(document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY));
+					//Si l'élément est une perle, execution du coloriage
+					if($target.hasClass("box")) clickBead($target);
+				}		
+			}else{
+				// Version desktop
+				$(".box")
+				.mousedown(function() {	
+					isDown = true;
+					clickBead($(this));
+				})
+				.mousemove(function() {
+					if(isDown && event.target != $bead){
+						clickBead($(this));
+					}
+				 })
+				.mouseup(function() {	
+					isDown = false;
+				});
 
-			$(".grid").mouseleave(function(){
-				isDown = false;
-			});
-		}		
+				$(".grid").mouseleave(function(){
+					isDown = false;
+				});
+			}		
+		}
+		
 		
 		function clickBead(target){
 			$bead = target ? target : event.target;		
