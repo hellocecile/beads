@@ -89,6 +89,8 @@ $(document).ready(function(){
 	
 	// Module beadTools
 	var beadTools = (function(){
+		
+		var colorsCount = [];
 		//cache DOM
 		var $btnSave = $('button[name=save]');
 		var $btnClear = $("button[name=clear-all]");
@@ -98,6 +100,7 @@ $(document).ready(function(){
 		//bind events		
 		subpub.on("undoAction", undoAction);
 		subpub.on("gridOrient", setBtnOrient);
+		subpub.on("colorCount", colorCount);
 		// Au clique sur enregistrer
 		$btnSave.click(function(){
 			subpub.emit("saveGrid", this);
@@ -138,6 +141,15 @@ $(document).ready(function(){
 			undoList.pop();
 			//console.log(undoList);
 			localStorage["undoList"] = JSON.stringify(undoList);
+		}
+		
+		// Comptage couleur
+		function colorCount(color, value){
+			// incrémente de value le nombre de la couleur
+			colorsCount[color] = colorsCount[color] + value || value;
+			// supprime la couleur du tableau si null ou négatif
+			if(colorsCount[color] <= 0) delete colorsCount[color];
+			console.log(colorsCount);
 		}
 		
 	})();
@@ -233,11 +245,13 @@ $(document).ready(function(){
 		function colorBead(bead, colorB = color){
 			 // console.log('color', bead, colorB);
 		  if(colorB){
+			  if($(bead).attr('data-color')) subpub.emit("colorCount", {color:$(bead).attr('data-color'), value:-1});
 			  //$(bead).css("background-color", color);
 			  $(bead).css("background", "-moz-linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
 			  $(bead).css("background", "-webkit-linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
 			  $(bead).css("background", "linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
 			  $(bead).attr('data-color', colorB);
+			  subpub.emit("colorCount", {color:colorB, value:1});
 		  }else{
 			  unColorBead($(bead));
 		  }
@@ -245,7 +259,9 @@ $(document).ready(function(){
 		
 		// Décoloration d'une perle
 		function unColorBead(bead){
-		  $(bead).removeAttr('style data-color');
+			var colorB = $(bead).attr('data-color');
+			$(bead).removeAttr('style data-color');
+			subpub.emit("colorCount", {color:colorB, value:-1});
 		}
 		
 		// RAZ grille
