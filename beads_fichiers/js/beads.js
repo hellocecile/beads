@@ -126,7 +126,6 @@ $(document).ready(function(){
 		
 		// Affichage du nombre par couleur
 		function colorNumber(color, value){
-			console.log(color, value);
 			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('i');
 			var nb = parseInt($colorCircle.html()) || 0;
 			nb += value;
@@ -215,7 +214,6 @@ $(document).ready(function(){
 			colorsCount[color] = colorsCount[color] + value || value;
 			// supprime la couleur du tableau si null ou négatif
 			if(colorsCount[color] <= 0) delete colorsCount[color];
-			console.log(colorsCount);
 		}
 		
 	})();
@@ -247,6 +245,7 @@ $(document).ready(function(){
 		subpub.on("colorBead", colorBead);
 		subpub.on("saveGrid", saveGrid);
 		subpub.on("clearGrid", clearGrid);
+		subpub.on("colorCountRAZ", colorCountRAZ);
 		 
 		// Détails de grille
 		function gridDetails(){
@@ -271,10 +270,19 @@ $(document).ready(function(){
 			gridEventsBinds();
 		})();
 		
+		// Comptage nombre couleur d'un schema affiché
 		function colorCountUpdate(){
 			var col = $(".grid .box[data-color]");
 			$.each(col, function(key, bead){
 				subpub.emit("colorCount", {color:$(bead).attr('data-color'), value:1});
+			});
+		}
+		
+		// RAZ nombre couleur d'un schema affiché
+		function colorCountRAZ(){
+			var col = $(".grid .box[data-color]");
+			$.each(col, function(key, bead){
+				subpub.emit("colorCount", {color:$(bead).attr('data-color'), value:-1});
 			});
 		}
 		
@@ -332,14 +340,15 @@ $(document).ready(function(){
 		}
 		
 		// Décoloration d'une perle
-		function unColorBead(bead){
-			var colorB = $(bead).attr('data-color');
-			$(bead).removeAttr('style data-color');
+		function unColorBead($bead){
+			var colorB = $bead.attr('data-color');
+			$bead.removeAttr('style data-color');
 			subpub.emit("colorCount", {color:colorB, value:-1});
 		}
 		
 		// RAZ grille
 		function clearGrid(){
+			subpub.emit("colorCountRAZ");			
 			unColorBead($grid.children().children());
 		}
 		
