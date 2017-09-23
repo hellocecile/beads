@@ -93,7 +93,7 @@ $(document).ready(function(){
 		
 		//cache DOM
 		var $pickColor = $(".pick-color");
-		var $colorIcon;
+		var $colorIcons;
 		
 		//initialisation
 		(function init(){
@@ -102,7 +102,7 @@ $(document).ready(function(){
 		
 		//bind events
 		// Au clique sur une couleur
-		$colorIcon.click(function(){
+		$colorIcons.click(function(){
 			var $clickArea = $(this);
 			var prevColor = color ? color : '';
 			color = $clickArea.attr("data-color"); // On récupère la couleur
@@ -121,35 +121,32 @@ $(document).ready(function(){
 				$pickColor.append(html);
 			});
 			
-			$colorIcon = $pickColor.find(".pick");
+			$colorIcons = $pickColor.find(".pick");
 		}
 		
 		// Affichage du nombre par couleur
 		function colorNumber(color, value){
-			var $colorCircle = nbColorIcon(color);
-			var nb = parseInt($colorCircle.html()) || 0;
+			var $colorNbLabel = colorNbLabel(color);
+			var nb = parseInt($colorNbLabel.html()) || 0;
 			nb += value;
-			nb <= 0 ? RemoveNbColorIcon(color) : $colorCircle.text(nb);
+			nb <= 0 ? RemoveNbColorLabel($colorNbLabel) : $colorNbLabel.text(nb);
 		}
 		
 		// Puce nombre couleur
-		function nbColorIcon(color){
-			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('[data-nbcolor]');
-			if($colorCircle.length <= 0){
-				var html = '<span class="nbColor badge" data-nbcolor></span>';
-				$colorIcon.filter("[data-color='"+color+"']").append(html);
-				$colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('[data-nbcolor]');
-			}
-			
-			return $colorCircle;
+		function colorNbLabel(color){
+			var $colorIcon = $colorIcons.filter("[data-color='"+color+"']");
+			var $colorNbLabel = $colorIcon.find('[data-nbcolor]');
+			if($colorNbLabel.length <= 0){
+				var html = '<span class="badge" data-nbcolor></span>';
+				$colorIcon.append(html);
+				$colorNbLabel = $colorIcon.find('[data-nbcolor]');
+			}			
+			return $colorNbLabel;
 		}
 		
 		// Supprime puce nombre couleur
-		function RemoveNbColorIcon(color){
-			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('[data-nbcolor]');
-			if($colorCircle.length > 0){
-				$colorCircle.remove();
-			}			
+		function RemoveNbColorLabel($colorNbLabel){
+			$colorNbLabel.remove();
 			return true;
 		}
 		
