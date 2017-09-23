@@ -126,11 +126,34 @@ $(document).ready(function(){
 		
 		// Affichage du nombre par couleur
 		function colorNumber(color, value){
-			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('i');
+			var $colorCircle = nbColorIcon(color);
 			var nb = parseInt($colorCircle.html()) || 0;
 			nb += value;
-			nb <= 0 ? $colorCircle.text('') : $colorCircle.text(nb);
+			nb <= 0 ? RemoveNbColorIcon(color) : $colorCircle.text(nb);
 		}
+		
+		// Puce nombre couleur
+		function nbColorIcon(color){
+			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('[data-nbcolor]');
+			if($colorCircle.length <= 0){
+				var html = '<span class="nbColor badge" data-nbcolor></span>';
+				$colorIcon.filter("[data-color='"+color+"']").append(html);
+				$colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('[data-nbcolor]');
+			}
+			
+			return $colorCircle;
+		}
+		
+		// Supprime puce nombre couleur
+		function RemoveNbColorIcon(color){
+			var $colorCircle = $colorIcon.filter("[data-color='"+color+"']").find('[data-nbcolor]');
+			if($colorCircle.length > 0){
+				$colorCircle.remove();
+			}			
+			return true;
+		}
+		
+	
 		
 		//Actions au clic sur une couleur
 		function colorClic(clickArea, newColor){

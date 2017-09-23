@@ -71,6 +71,7 @@ html, body{
 }
 
 .pick {
+	position: relative;
     display: inline-block;
     width: 20px;
     height: 20px;
@@ -80,7 +81,6 @@ html, body{
 	text-align: center;
 }
 .pick i.fa{
-	position: relative;
     top: -2px;
 }
 
@@ -99,4 +99,24 @@ html, body{
 .peyote{
 	width: 15px;
     height: 19px;
+}
+
+.badge {
+  position: absolute;  
+  right: -7px;
+  top: -7px;
+  border-radius: 10px;
+  display: inline-block;
+  padding: 1px 4px;
+  background-color: #b5b5b5;
+  font-size: 0.5rem;
+  font-weight: bolder;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.badge:hover, .badge:focus {
+  cursor: default;
+}
+.badge:empty {
+  display: none;
 }
