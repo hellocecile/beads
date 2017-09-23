@@ -250,7 +250,7 @@ $(document).ready(function(){
 		var gridInfB = {nbRow:16, nbBead:18, classBox:'', classRow:'', colAngle:'to right'};
 		var gridInfP = {nbRow:18, nbBead:16, classBox:'boxP', classRow:'rowP', colAngle:'to bottom'};
 		var beadDir = 'brickstitch';
-		var gridInf = beadDir == 'peyote' ? gridInfP : gridInfB;	
+		var gridInfs = setgridInfs(beadDir);
         var nbRows;
 		var nbBeads;
 		var beadCell = '<div class="box "></div>';
@@ -260,12 +260,19 @@ $(document).ready(function(){
 		var $grid = $('div.grid');
 		
 		//bind events
+		subpub.on("gridOrient", setgridInfs);
 		subpub.on("gridOrient", beadDirChange);
 		subpub.on("clickBead", colorBead);
 		subpub.on("colorBead", colorBead);
 		subpub.on("saveGrid", saveGrid);
 		subpub.on("clearGrid", clearGrid);
 		subpub.on("colorCountRAZ", colorCountRAZ);
+		
+		// Config gridInfs
+		function setgridInfs(beadDir){
+			gridInfs = beadDir == 'peyote' ? gridInfP : gridInfB;
+			return gridInfs;
+		}
 		 
 		// Détails de grille
 		function gridDetails(){
@@ -274,8 +281,8 @@ $(document).ready(function(){
 			windowHeight = $( window ).height() - 50;
 			// documentWidth = $( document ).width();
 			windowWidth = $( window ).width();
-			nbRows = 2*Math.floor((windowHeight / gridInf.nbRow)/2);
-			nbBeads = 2*Math.floor((windowWidth / gridInf.nbBead)/2);
+			nbRows = 2*Math.floor((windowHeight / gridInfs.nbRow)/2);
+			nbBeads = 2*Math.floor((windowWidth / gridInfs.nbBead)/2);
 		}
 		
 		//initialisation
@@ -350,7 +357,7 @@ $(document).ready(function(){
 			  //$(bead).css("background-color", color);
 			  var browserPrefix = ["-moz-", "-webkit-", ""];
 			  $.each(browserPrefix, function(key, prefix){
-				  $(bead).css("background", prefix+"linear-gradient("+gridInf.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
+				  $(bead).css("background", prefix+"linear-gradient("+gridInfs.colAngle+", "+ colorB +" 0%,rgba(255,255,255,0.3) 30%,rgba(255,255,255,0.3) 60%,"+ colorB +" 99%), "+ colorB +"");
 			  });
 			  $(bead).attr('data-color', colorB);
 			  subpub.emit("colorCount", {color:colorB, value:1});
@@ -378,8 +385,6 @@ $(document).ready(function(){
 			if($(".grid").attr('data-gridDir') != newDir){
 				// MAJ perle direction avec nouvelle direction
 			beadDir = newDir;
-			// MAJ des infos sur la grille
-			gridInf = beadDir == 'peyote' ? gridInfP : gridInfB;
 			// Si nouvelle direction est peyote, ajout des class associées, sinon suppressions des class peyote
 			if(beadDir == 'peyote'){
 				$(".box").addClass(gridInfP.classBox);
