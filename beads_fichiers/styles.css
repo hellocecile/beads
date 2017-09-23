@@ -45,8 +45,8 @@ html, body{
     position: relative;
 }
 .rowP:nth-child(2n) {
-    left: 0px;
-    position: initial;
+    left: 8px;
+    position: relative;
 }
 
 .box {
@@ -55,15 +55,15 @@ html, body{
   width: 16px;
   display: inline-block;
   margin: 0;
-  border-radius: 2px;
+  /*border-radius: 2px;*/
 }
 .boxP {
+  border: 1px solid #CCC;
   height: 16px;
   width: 14px;
-}
-.boxP:nth-child(2n) {
-    top: 8px;
-    position: relative;
+  display: inline-block;
+  margin: 0;
+  border-radius: 2px;
 }
 
 .pick-color {
@@ -71,17 +71,12 @@ html, body{
 }
 
 .pick {
-	position: relative;
     display: inline-block;
     width: 20px;
     height: 20px;
     border-radius: 20px;
     margin: 0.50vw;
     border: 1px solid #DDD;
-	text-align: center;
-}
-.pick i.fa{
-    top: -2px;
 }
 
 .selected {
@@ -99,24 +94,4 @@ html, body{
 .peyote{
 	width: 15px;
     height: 19px;
-}
-
-.badge {
-  position: absolute;  
-  right: -7px;
-  top: -7px;
-  border-radius: 10px;
-  display: inline-block;
-  padding: 1px 4px;
-  background-color: #b5b5b5;
-  font-size: 0.5rem;
-  font-weight: bolder;
-  vertical-align: baseline;
-  white-space: nowrap;
-}
-.badge:hover, .badge:focus {
-  cursor: default;
-}
-.badge:empty {
-  display: none;
 }
