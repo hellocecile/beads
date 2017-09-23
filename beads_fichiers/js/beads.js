@@ -281,8 +281,8 @@ $(document).ready(function(){
 			windowHeight = $( window ).height() - 50;
 			// documentWidth = $( document ).width();
 			windowWidth = $( window ).width();
-			nbRows = 2*Math.floor((windowHeight / gridInfs.nbRow)/2);
-			nbBeads = 2*Math.floor((windowWidth / gridInfs.nbBead)/2);
+			nbRows = 2*Math.floor((windowHeight / gridInfs.nbRow)/2) - 1;
+			nbBeads = 2*Math.floor((windowWidth / gridInfs.nbBead)/2) - 4;
 		}
 		
 		//initialisation
@@ -316,7 +316,7 @@ $(document).ready(function(){
 		
 		// Création d'une ligne
 		function createRow(){
-			for(var j=1; j< (nbBeads-2); j++){
+			for(var j=0; j< (nbBeads); j++){
 				$beadRow.append(beadCell);
 			}
 		}
@@ -325,7 +325,7 @@ $(document).ready(function(){
         // une perle = 16px x 14px
 		function createGrid(){
 			createRow();
-			for(var i=1; i<=nbRows; i++){
+			for(var i=0; i<=nbRows; i++){
 				$grid.append($beadRow.clone());
 			}
 		}
@@ -433,24 +433,25 @@ $(document).ready(function(){
 				}
 			}
 			
-			var nbBoxPerRow = $beads.length / $rows.length;
+			var nbBoxPerRow = $beads.length / $rows.length;			
 			// Si nombre de perles actuel est inférieur à nouveau nb perles, ajout de x perles
-			if(nbBoxPerRow < nbBeads - 2){
-				var nbBoxToAdd = nbBeads - 2 - nbBoxPerRow;
+			if(nbBoxPerRow < nbBeads){
+				var nbBoxToAdd = Math.floor(nbBeads - nbBoxPerRow);
 				for(var j=0; j < (nbBoxToAdd / 2); j++){
 					$('.row .box:last').clone().removeAttr('style data-color').insertAfter($('.row').find('.box:last'));
 					$('.row .box:first').clone().removeAttr('style data-color').insertBefore($('.row').find('.box:first'));
 				}
 			}
 			// Si nombre de perles actuel est suppérieur à nouveau nb perles, suppression de x perles
-			if(nbBoxPerRow > nbBeads - 2){
-				var nbBoxToRemove = nbBoxPerRow - (nbBeads - 2);
+			if(nbBoxPerRow > nbBeads){
+				var nbBoxToRemove = Math.ceil(nbBoxPerRow - (nbBeads));
 				for(var k=0; k < nbBoxToRemove / 2; k++){
 					$('.row').find('.box:last').remove();
 					$('.row').find('.box:first').remove();				
 				}
-			}		
+			}
 			
+			// Création des écouteurs d'événements une fois la grille reconstruite
 			gridEventsBinds();
 		}
 		
