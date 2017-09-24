@@ -106,8 +106,8 @@ $(document).ready(function(){
 			var $clickArea = $(this);
 			var prevColor = color ? color : '';
 			color = $clickArea.attr("data-color"); // On récupère la couleur
-			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
-			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $clickArea, color: prevColor, NewColor: color} });
+			subpub.emit("colorClic", {color:color});
+			subpub.emit("toUndoList", {action:'colorClic', params: {color: prevColor, NewColor: color} });
 		});
 		subpub.on("colorClic", colorClic); // On met en évidence la couleur sélectionnée et config couleur
 		subpub.on("colorCount", colorNumber);
@@ -153,9 +153,10 @@ $(document).ready(function(){
 	
 		
 		//Actions au clic sur une couleur
-		function colorClic(clickArea, newColor){
+		function colorClic(newColor){
+			var colorIcon = $pickColor.find("[data-color='"+newColor+"']");
 			setColor(newColor);
-			selectedColor(clickArea);
+			selectedColor(colorIcon);
 		}
 		
 		//Définition de la couleur
