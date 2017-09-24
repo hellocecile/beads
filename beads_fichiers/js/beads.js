@@ -447,15 +447,15 @@ $(document).ready(function(){
 			if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) { 
 				// Version mobile
 				$(".box")
-				.on("vmousedown", function(){
-					touchClickBead();
+				.on("vmousedown", function(event){
+					touchClickBead(event.clientX, event.clientY);
 				})
-				.on("vmousemove", function(){
-					touchClickBead();
+				.on("vmousemove", function(event){
+					touchClickBead(event.clientX, event.clientY);
 				});
-				function touchClickBead(){
+				function touchClickBead(x, y){
 					//Récupère l'élement ou se trouve le doigt
-					var $target = $(document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY));
+					var $target = $(document.elementFromPoint(x, y));
 					//Si l'élément est une perle, execution du coloriage
 					if($target.hasClass("box")) clickBead($target);
 				}		
@@ -466,7 +466,7 @@ $(document).ready(function(){
 					isDown = true;
 					clickBead($(this));
 				})
-				.mousemove(function() {
+				.mousemove(function(event) {
 					if(isDown && event.target != $bead){
 						clickBead($(this));
 					}
@@ -545,9 +545,7 @@ $(document).ready(function(){
 		
 
     // TODO: Ajouter un bouton pour revenir en arrière
-    $("button[name=undo]").click(function(){
-        // $(".box").undo(); // en cours
-    });
+    // en cours.
 
     // TODO: Ajouter le "pot de peinture"
    
