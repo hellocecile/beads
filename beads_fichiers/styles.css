@@ -14,6 +14,10 @@ html, body{
 
 /*****JQUERY OVERRIDE*****/
 
+.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
+    background-color: #ffffff;
+}
+
 .ui-panel {
     width: initial;
     max-width: 140px;
@@ -102,7 +106,7 @@ html, body{
 }
 
 .badge {
-  position: absolute;  
+  position: absolute;
   right: -7px;
   top: -7px;
   border-radius: 10px;
