@@ -106,8 +106,8 @@ $(document).ready(function(){
 			var $clickArea = $(this);
 			var prevColor = color ? color : '';
 			color = $clickArea.attr("data-color"); // On récupère la couleur
-			subpub.emit("colorClic", {clickArea: $clickArea, color:color});
-			subpub.emit("toUndoList", {action:'colorClic', params: {clickArea: $clickArea, color: prevColor, NewColor: color} });
+			subpub.emit("colorClic", {color:color});
+			subpub.emit("toUndoList", {action:'colorClic', params: {color: prevColor, NewColor: color} });
 		});
 		subpub.on("colorClic", colorClic); // On met en évidence la couleur sélectionnée et config couleur
 		subpub.on("colorCount", colorNumber);
@@ -153,9 +153,10 @@ $(document).ready(function(){
 	
 		
 		//Actions au clic sur une couleur
-		function colorClic(clickArea, newColor){
+		function colorClic(newColor){
+			var colorIcon = $pickColor.find("[data-color='"+newColor+"']");
 			setColor(newColor);
-			selectedColor(clickArea);
+			selectedColor(colorIcon);
 		}
 		
 		//Définition de la couleur
@@ -182,8 +183,7 @@ $(document).ready(function(){
 		var $btnUndo = $("button[name=undo]");
 		var $btnGridOrient = $("button[name=bead-orientation]");
 		
-		//bind events		
-		subpub.on("undoAction", undoAction);
+		//bind events
 		subpub.on("gridOrient", setBtnOrient);
 		subpub.on("colorCount", colorCount);
 		// Au clique sur enregistrer
@@ -210,22 +210,6 @@ $(document).ready(function(){
 			var nextDir = newDir == "peyote" ? "brickstitch" : "peyote";
 			$btnGridOrient.attr("data-newGridDir", nextDir);
 			$btnGridOrient.html(nextDir);
-		}
-		
-		// Fonction retour arrière (undo)
-		function undoAction(){
-			var undoList = localStorage["undoList"] ? JSON.parse(localStorage["undoList"]) : [];
-			var lastAction = ($(undoList).get(-1));
-			console.log(lastAction);
-			console.log(lastAction.action);
-			console.log(lastAction.action, $.type(lastAction.action));
-			console.log(lastAction.params);
-			subpub.emit(lastAction.action, lastAction.params);
-			//subpub.emit("colorClic", "#000");
-			console.log(color);
-			undoList.pop();
-			//console.log(undoList);
-			localStorage["undoList"] = JSON.stringify(undoList);
 		}
 		
 		// Comptage couleur
@@ -463,15 +447,15 @@ $(document).ready(function(){
 			if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) { 
 				// Version mobile
 				$(".box")
-				.on("vmousedown", function(){
-					touchClickBead();
+				.on("vmousedown", function(event){
+					touchClickBead(event.clientX, event.clientY);
 				})
-				.on("vmousemove", function(){
-					touchClickBead();
+				.on("vmousemove", function(event){
+					touchClickBead(event.clientX, event.clientY);
 				});
-				function touchClickBead(){
+				function touchClickBead(x, y){
 					//Récupère l'élement ou se trouve le doigt
-					var $target = $(document.elementFromPoint(event.touches[0].pageX, event.touches[0].pageY));
+					var $target = $(document.elementFromPoint(x, y));
 					//Si l'élément est une perle, execution du coloriage
 					if($target.hasClass("box")) clickBead($target);
 				}		
@@ -482,7 +466,7 @@ $(document).ready(function(){
 					isDown = true;
 					clickBead($(this));
 				})
-				.mousemove(function() {
+				.mousemove(function(event) {
 					if(isDown && event.target != $bead){
 						clickBead($(this));
 					}
@@ -499,11 +483,11 @@ $(document).ready(function(){
 		
 		
 		function clickBead(target){
-			$bead = target ? target : event.target;		
-			var prevColor = $bead.attr("data-color") || '';
+			var bead = target ? target : event.target;		
+			var prevColor = bead.attr("data-color") || '';
 			if(prevColor != color){
-				subpub.emit("clickBead", $bead);
-				subpub.emit("toUndoList", {action:'colorBead', params:{$bead , prevColor, color} });				
+				subpub.emit("clickBead", bead);
+				subpub.emit("toUndoList", {action:'colorBead', params:{bead: bead , prevColor: prevColor, color: color} });				
 			}
 		}
 		
@@ -514,20 +498,54 @@ $(document).ready(function(){
 	var logger = (function(){
 		//bind events
 		subpub.on("toUndoList", undoList);
+		subpub.on("undoAction", undoAction);
 		
 		//Mise en liste undo
 		function undoList(data){
 			var undoList = localStorage["undoList"] ? JSON.parse(localStorage["undoList"]) : [];
+			var data = data;
+			// Si un élément perle (bead) est dans les paramètres, on le remplace par son index dans la grille pour sauvegarde
+			if(data.params.bead){
+				data.params.bead = getBeadIndex(data.params.bead);
+			}			
 			undoList.push(data);
 			localStorage["undoList"] = JSON.stringify(undoList);
+		}
+		
+		// Fonction retour arrière (undo)
+		function undoAction(){
+			var undoList = localStorage["undoList"] ? JSON.parse(localStorage["undoList"]) : [];
+			// Si la liste retour n'est pas vide
+			if(undoList.length > 0){
+				var lastAction = ($(undoList).get(-1));
+				// Si la définition d'une perle (bead) est dans les paramètres, on transforme l'index sauvegardé en élément DOM
+				if(lastAction.params.bead){
+					lastAction.params.bead = getIndexBead(lastAction.params.bead);
+				}
+				subpub.emit(lastAction.action, lastAction.params);
+				undoList.pop();
+				localStorage["undoList"] = JSON.stringify(undoList);				
+			}else{
+				localStorage.removeItem("undoList");
+			}			
+		}
+		
+		// Récupère index d'une perle
+		function getBeadIndex(bead){
+			var index = $('.box').index($(bead));
+			return(index);
+		}
+		
+		// Récupère élement DOM perle d'un index
+		function getIndexBead(index){
+			var bead = $('.box').get(index);
+			return(bead);
 		}
 	})();
 		
 
     // TODO: Ajouter un bouton pour revenir en arrière
-    $("button[name=undo]").click(function(){
-        // $(".box").undo(); // en cours
-    });
+    // en cours.
 
     // TODO: Ajouter le "pot de peinture"
    
